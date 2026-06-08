@@ -27,55 +27,88 @@
 <body class="bg-gray-50 h-screen flex flex-col font-sans text-gray-800">
 
     <!-- 頂部導覽列 -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shrink-0 shadow-sm">
+    <header class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shrink-0 shadow-sm">
         <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h1 class="text-xl font-bold tracking-tight" data-i18n="app.title">Markdown Editor</h1>
         </div>
-        <div class="flex gap-3">
-            <button id="clear-btn" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-red-600 transition-colors">
-                <span data-i18n="controls.clearContent">Clear</span>
-            </button>
-            <button id="load-default-markdown-btn" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                <span data-i18n="controls.loadDefaultMarkdown">Load Demo</span>
-            </button>
-            <button id="remove-empty-lines-btn" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 transition-colors">
-                <span data-i18n="controls.removeEmptyLines">Remove Empty Lines</span>
-            </button>
-            <label class="flex items-center gap-2 text-sm text-gray-600">
-                <span data-i18n="language.label">Language</span>
-                <select id="language-select" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-700">
-                    <option value="en">English</option>
-                    <option value="zh-TW">繁體中文</option>
-                </select>
-            </label>
-            <label class="flex items-center gap-2 text-sm text-gray-600">
-                <span data-i18n="controls.pasteMode">Rich Paste Mode</span>
-                <select id="paste-mode" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-700">
-                    <option value="replace" selected data-i18n="controls.pasteModeReplace">Replace</option>
-                    <option value="append" data-i18n="controls.pasteModeAppend">Append</option>
-                    <option value="prepend" data-i18n="controls.pasteModePrepend">Prepend</option>
-                </select>
-            </label>
-            <button id="paste-rich-btn" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-md active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-4 0a2 2 0 002 2h2a2 2 0 002-2m-4 0a2 2 0 012-2h0a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                <span data-i18n="controls.pasteRichText">Paste Rich Text</span>
-            </button>
-            <button id="copy-btn" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-md active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                </svg>
-                <span data-i18n="controls.copyRichText">Copy Rich Text</span>
-            </button>
-        </div>
+        <label class="flex items-center gap-2 text-sm text-gray-600">
+            <span data-i18n="language.label">Language</span>
+            <select id="language-select" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-700">
+                <option value="en">English</option>
+                <option value="zh-TW">繁體中文</option>
+            </select>
+        </label>
     </header>
 
     <!-- 主要工作區 -->
-    <main class="flex-1 grid min-h-0 grid-cols-1 grid-rows-[auto_1fr_auto_1fr] md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-4 gap-y-0 overflow-hidden p-4">
+    <main class="editor-workspace flex-1 min-h-0 flex flex-col overflow-y-auto md:overflow-hidden p-4">
+        <div class="editor-toolbar sticky top-0 z-30 -mx-4 px-4 pb-3 mb-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="editor-toolbar__panel flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                <button id="clear-btn" class="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-red-600 transition-colors">
+                    <span data-i18n="controls.clearContent">Clear</span>
+                </button>
+                <button id="load-default-markdown-btn" class="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+                    <span data-i18n="controls.loadDefaultMarkdown">Load Demo</span>
+                </button>
+                <button id="remove-empty-lines-btn" class="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-amber-600 transition-colors">
+                    <span data-i18n="controls.removeEmptyLines">Remove Empty Lines</span>
+                </button>
+                <div class="hidden sm:block w-px h-5 bg-gray-200" aria-hidden="true"></div>
+                <label class="flex items-center gap-2 text-sm text-gray-600">
+                    <span data-i18n="controls.pasteMode">Rich Paste Mode</span>
+                    <select id="paste-mode" class="border border-gray-300 rounded px-2 py-1 bg-white text-gray-700">
+                        <option value="replace" selected data-i18n="controls.pasteModeReplace">Replace</option>
+                        <option value="append" data-i18n="controls.pasteModeAppend">Append</option>
+                        <option value="prepend" data-i18n="controls.pasteModePrepend">Prepend</option>
+                    </select>
+                </label>
+                <button
+                    id="paste-clean-settings-btn"
+                    type="button"
+                    class="flex items-center gap-1 border border-gray-300 rounded px-2 py-1 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+                    aria-haspopup="dialog"
+                    aria-controls="paste-clean-modal"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span data-i18n="controls.pasteCleanSettings">Clean Rich Text Paste</span>
+                </button>
+                <button id="paste-rich-btn" class="ml-auto flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-4 0a2 2 0 002 2h2a2 2 0 002-2m-4 0a2 2 0 012-2h0a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    <span data-i18n="controls.pasteRichText">Paste Rich Text</span>
+                </button>
+            </div>
+            <div class="editor-toolbar__panel flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                <button
+                    id="sop-settings-btn"
+                    type="button"
+                    class="flex items-center gap-1 border border-gray-300 rounded px-2 py-1 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+                    aria-haspopup="dialog"
+                    aria-controls="sop-settings-modal"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span data-i18n="controls.renderSettings">Render Settings</span>
+                </button>
+                <button id="copy-btn" class="ml-auto flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    <span data-i18n="controls.copyRichText">Copy Rich Text</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="editor-panels flex-1 min-h-0 grid grid-cols-1 grid-rows-[auto_1fr_auto_1fr] md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-4 gap-y-0">
 
         <!-- 輸入區 -->
         <div class="contents">
@@ -89,35 +122,78 @@
 
         <!-- 預覽區 -->
         <div class="contents">
-            <div class="panel-header bg-gray-100 px-4 py-2 border border-gray-200 border-b-0 text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-t-xl flex justify-between gap-3 md:col-start-2 md:row-start-1">
-                <span data-i18n="panels.previewRichText">Live Preview (Rich Text)</span>
-                <div class="flex flex-wrap items-center justify-end gap-3 normal-case tracking-normal text-gray-600">
-                    <button
-                        id="sop-settings-btn"
-                        type="button"
-                        class="flex items-center gap-1 border border-gray-300 rounded px-2 py-1 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                        aria-haspopup="dialog"
-                        aria-controls="sop-settings-modal"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span data-i18n="controls.renderSettings">Render Settings</span>
-                    </button>
-                </div>
+            <div class="panel-header bg-gray-100 px-4 py-2 border border-gray-200 border-b-0 text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-t-xl md:col-start-2 md:row-start-1" data-i18n="panels.previewRichText">
+                Live Preview (Rich Text)
             </div>
             <div id="preview-area" class="min-h-0 flex-1 overflow-y-auto border border-gray-200 bg-white p-6 shadow-sm prose-sm max-w-none rounded-b-xl md:col-start-2 md:row-start-2">
                 <!-- 解析後的 HTML 會放在這裡 -->
             </div>
         </div>
 
+        </div>
     </main>
 
     <div id="markdown-drop-overlay" class="markdown-drop-overlay hidden" aria-hidden="true">
         <div class="markdown-drop-overlay__panel">
             <p class="markdown-drop-overlay__title" data-i18n="overlay.dropMarkdownTitle">Drop Markdown file to load</p>
             <p class="markdown-drop-overlay__hint" data-i18n="overlay.dropMarkdownHint">Supports .md and .markdown files</p>
+        </div>
+    </div>
+
+    <div id="paste-clean-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="paste-clean-title">
+        <div class="w-full max-w-md rounded-xl bg-white shadow-xl border border-gray-200">
+            <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+                <h2 id="paste-clean-title" class="text-base font-semibold text-gray-800" data-i18n="controls.pasteCleanSettingsTitle">Clean Rich Text Paste Format</h2>
+                <button id="paste-clean-close-icon" type="button" class="text-gray-400 hover:text-gray-600 transition-colors" data-i18n-attr="aria-label:controls.close" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4 px-5 py-5">
+                <p class="text-sm text-gray-500" data-i18n="controls.pasteCleanSettingsHint">Choose which formatting to remove when pasting rich text from the clipboard.</p>
+                <div class="flex flex-wrap gap-2">
+                    <button id="paste-clean-select-all-btn" type="button" class="border border-gray-300 rounded px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm" data-i18n="controls.pasteCleanSelectAll">
+                        Select All
+                    </button>
+                    <button id="paste-clean-deselect-all-btn" type="button" class="border border-gray-300 rounded px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-50 transition-colors text-sm" data-i18n="controls.pasteCleanDeselectAll">
+                        Deselect All
+                    </button>
+                </div>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-font" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanFont">Remove font family and size (font/span/div tags and style)</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-color" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanColor">Remove text and background colors</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-bold" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanBold">Remove bold</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-italic" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanItalic">Remove italic</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-links" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanLinks">Remove hyperlinks</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-table-metadata" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanTableMetadata">Remove table metadata</span>
+                </label>
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="paste-clean-table-style" type="checkbox" class="mt-1 rounded border-gray-300">
+                    <span data-i18n="controls.pasteCleanTableStyle">Remove table styles</span>
+                </label>
+            </div>
+            <div class="flex justify-end border-t border-gray-200 px-5 py-4">
+                <button id="paste-clean-close-btn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-i18n="controls.sopSettingsConfirm">
+                    Done
+                </button>
+            </div>
         </div>
     </div>
 
@@ -185,6 +261,7 @@
         Copied to clipboard!
     </div>
 
+    <script src="scripts/transform/clean-paste-html.js"></script>
     <script src="scripts/transform/filter-markdown.js"></script>
     <script src="scripts/converters/html-to-markdown-converter.js"></script>
     <script src="scripts/clipboard/read-clipboard.js"></script>

@@ -37,7 +37,19 @@ export const ZH_TW_TRANSLATIONS = {
         tableStylePurple: "紫",
         tableStyleBrown: "褐",
         pasteRichText: "貼上富文本",
-        copyRichText: "複製富文本"
+        copyRichText: "複製富文本",
+        pasteCleanSettings: "清理富文本貼上格式",
+        pasteCleanSettingsTitle: "清理富文本貼上格式",
+        pasteCleanSettingsHint: "貼上剪貼簿富文本時，選擇要移除的格式。",
+        pasteCleanFont: "清理字型與字級（含 font/span/div 標籤與 style）",
+        pasteCleanColor: "清理文字與背景顏色",
+        pasteCleanBold: "清理粗體",
+        pasteCleanItalic: "清理斜體",
+        pasteCleanLinks: "清理超連結",
+        pasteCleanTableMetadata: "清理表格 metadata（xmlns、dir、data-*）",
+        pasteCleanTableStyle: "清理表格樣式（border、cellpadding、cellspacing、width、bordercolor 等）",
+        pasteCleanSelectAll: "全部勾選",
+        pasteCleanDeselectAll: "全部取消"
     },
     panels: {
         markdownInput: "Markdown 輸入區",

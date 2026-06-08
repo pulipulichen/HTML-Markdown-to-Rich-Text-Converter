@@ -112,7 +112,7 @@ function preprocessHtmlForMarkdown(html) {
     return container.innerHTML;
 }
 
-function convertHtmlToMarkdown(html) {
+function convertHtmlToMarkdown(html, options = {}) {
     const turndownService = new TurndownService({
         headingStyle: "atx",
         codeBlockStyle: "fenced",
@@ -124,18 +124,18 @@ function convertHtmlToMarkdown(html) {
         turndownService.use(window.turndownPluginGfm.gfm);
     }
 
-    addMarkdownTableRule(turndownService);
+    addMarkdownTableRule(turndownService, options);
 
     return turndownService.turndown(preprocessHtmlForMarkdown(html));
 }
 
 window.convertHtmlToMarkdown = convertHtmlToMarkdown;
 
-function addMarkdownTableRule(turndownService) {
+function addMarkdownTableRule(turndownService, options = {}) {
     turndownService.addRule("markdownTables", {
         filter: "table",
         replacement: (content, node) => {
-            const markdownTable = convertTableNodeToMarkdown(node, turndownService);
+            const markdownTable = convertTableNodeToMarkdown(node, turndownService, options);
             return `\n\n${markdownTable}\n\n`;
         }
     });
@@ -177,7 +177,7 @@ function convertSingleCellTableToCodeBlock(cell) {
     return `\`\`\`\n${content}\n\`\`\``;
 }
 
-function convertTableNodeToMarkdown(table, turndownService) {
+function convertTableNodeToMarkdown(table, turndownService, options = {}) {
     const tableRows = Array.from(table.rows);
 
     if (tableRows.length === 1 && tableRows[0].cells.length === 1) {
@@ -186,7 +186,11 @@ function convertTableNodeToMarkdown(table, turndownService) {
 
     if (table.querySelector("[rowspan], [colspan]")) {
         const tableClone = table.cloneNode(true);
-        applyWordTableStyles(tableClone);
+
+        if (!options.skipTableStyles) {
+            applyWordTableStyles(tableClone);
+        }
+
         return tableClone.outerHTML.trim();
     }
 

@@ -1,8 +1,21 @@
-/* 兩欄標題列等高（md 以上與右欄控制項對齊） */
+/* 兩欄標題列等高 */
 .panel-header {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+}
+
+.editor-workspace {
+    background: #f9fafb;
+}
+
+.editor-toolbar {
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #f9fafb 75%, rgba(249, 250, 251, 0));
+}
+
+.editor-toolbar__panel {
+    min-height: 2.75rem;
 }
 
 .markdown-drop-overlay {

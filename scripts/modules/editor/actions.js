@@ -9,6 +9,12 @@ import {
     updateRichTextFormatUI
 } from "./settings.js";
 import { pasteRichTextAsMarkdown } from "./paste.js";
+import {
+    getPasteCleanOptions,
+    savePasteCleanOptions,
+    readPasteCleanOptionsFromCheckboxes,
+    setAllPasteCleanCheckboxes
+} from "./paste-clean-settings.js";
 
 export function bindEditorActions({ elements, t, updateEditorPreview, showEditorToast }) {
     const {
@@ -22,6 +28,9 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
         topHeadingLevelSelect,
         richTextFormatSelect,
         pasteModeSelect,
+        pasteCleanCheckboxes,
+        pasteCleanSelectAllBtn,
+        pasteCleanDeselectAllBtn,
         tableStyleSelect,
         codeBlockToTableCheckbox,
         renderSettingsElements
@@ -69,8 +78,23 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
             markdownContentKey: MARKDOWN_CONTENT_KEY,
             updateEditorPreview,
             showEditorToast,
+            pasteCleanOptions: getPasteCleanOptions(),
             t
         });
+    });
+
+    Object.values(pasteCleanCheckboxes).forEach(checkbox => {
+        checkbox?.addEventListener("change", () => {
+            savePasteCleanOptions(readPasteCleanOptionsFromCheckboxes(pasteCleanCheckboxes));
+        });
+    });
+
+    pasteCleanSelectAllBtn?.addEventListener("click", () => {
+        setAllPasteCleanCheckboxes(pasteCleanCheckboxes, true);
+    });
+
+    pasteCleanDeselectAllBtn?.addEventListener("click", () => {
+        setAllPasteCleanCheckboxes(pasteCleanCheckboxes, false);
     });
 
     copyBtn.addEventListener("click", () => {

@@ -12,6 +12,7 @@ import { createEditorSync } from "./modules/editor/preview-sync.js";
 import { bindEditorActions } from "./modules/editor/actions.js";
 import { bindMarkdownFileDrop } from "./modules/editor/drag-drop.js";
 import { bindSopSettingsModal } from "./modules/editor/sop-settings-modal.js";
+import { loadPasteCleanOptions } from "./modules/editor/paste-clean-settings.js";
 
 const elements = getEditorElements();
 const {
@@ -19,6 +20,11 @@ const {
     topHeadingLevelSelect,
     richTextFormatSelect,
     pasteModeSelect,
+    pasteCleanSettingsBtn,
+    pasteCleanModal,
+    pasteCleanCloseBtn,
+    pasteCleanCloseIconBtn,
+    pasteCleanCheckboxes,
     tableStyleSelect,
     codeBlockToTableCheckbox,
     sopSettingsBtn,
@@ -49,11 +55,19 @@ bindSopSettingsModal({
     closeIconBtn: sopSettingsCloseIconBtn
 });
 
+bindSopSettingsModal({
+    modal: pasteCleanModal,
+    openBtn: pasteCleanSettingsBtn,
+    closeBtn: pasteCleanCloseBtn,
+    closeIconBtn: pasteCleanCloseIconBtn
+});
+
 window.addEventListener("load", async () => {
     loadTopHeadingLevel(topHeadingLevelSelect);
     loadRichTextFormat(richTextFormatSelect, renderSettingsElements);
     loadCodeBlockToTable(codeBlockToTableCheckbox);
     loadPasteMode(pasteModeSelect);
+    loadPasteCleanOptions(pasteCleanCheckboxes);
     loadTableStyle(tableStyleSelect);
     await loadInitialContent(markdownInput, t);
     updateEditorPreview();

@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 1.0.5
+
+### Added
+
+- Added a **Clean Rich Text Paste** settings modal next to Rich Paste Mode, with per-option checkboxes for font family/size, colors, bold, italic, hyperlinks, table metadata, and table styles, persisted in `localStorage` (`paste_clean_options`).
+- Added **Select All** and **Deselect All** controls in the paste-clean modal for faster bulk toggling.
+- Added `scripts/transform/clean-paste-html.js` to sanitize clipboard HTML before Markdown conversion, and `scripts/modules/editor/paste-clean-settings.js` for option load/save helpers.
+- Added English and Traditional Chinese labels for all paste-clean controls and hints.
+
+### Changed
+
+- Moved editor and preview toolbar actions from the top header into a **sticky two-column navbar** above the Markdown Input and Live Preview panels (left: Clear, Load Demo, Remove Empty Lines, paste mode, paste-clean settings, Paste Rich Text; right: Render Settings, Copy Rich Text).
+- Simplified the top header to the app title and language selector only; moved Render Settings out of the Live Preview panel header into the preview toolbar.
+
+### Improved
+
+- Improved rich-text paste font cleanup to strip `font`/`span`/`div` inline styles, unwrap `font` and `span` wrappers, remove Word-broken font attributes (for example `times=""`, `new=""`, `roman";font-weight:...`), and flatten nested `<div>` elements inside table cells.
+- Improved rich-text paste table metadata cleanup to remove `xmlns`, `dir`, and `data-*` attributes from table-related elements while keeping structural presentation attributes until table-style cleanup runs.
+- Improved rich-text paste table style cleanup to strip `border`, `cellpadding`, `cellspacing`, `width`, `bordercolor`, and related attributes down to bare `<table>` markup.
+- Improved HTML-to-Markdown conversion during paste to skip `applyWordTableStyles` when table-style cleanup is enabled, so stripped table attributes are not re-applied after sanitization.
+
 ## 1.0.4
 
 ### Added

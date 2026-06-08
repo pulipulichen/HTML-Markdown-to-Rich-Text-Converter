@@ -37,7 +37,19 @@ export const EN_TRANSLATIONS = {
         tableStylePurple: "Purple",
         tableStyleBrown: "Brown",
         pasteRichText: "Paste Rich Text",
-        copyRichText: "Copy Rich Text"
+        copyRichText: "Copy Rich Text",
+        pasteCleanSettings: "Clean Rich Text Paste",
+        pasteCleanSettingsTitle: "Clean Rich Text Paste Format",
+        pasteCleanSettingsHint: "Choose which formatting to remove when pasting rich text from the clipboard.",
+        pasteCleanFont: "Remove font family and size (font/span/div tags and style)",
+        pasteCleanColor: "Remove text and background colors",
+        pasteCleanBold: "Remove bold",
+        pasteCleanItalic: "Remove italic",
+        pasteCleanLinks: "Remove hyperlinks",
+        pasteCleanTableMetadata: "Remove table metadata (xmlns, dir, data-*)",
+        pasteCleanTableStyle: "Remove table styles (border, cellpadding, cellspacing, width, bordercolor, etc.)",
+        pasteCleanSelectAll: "Select All",
+        pasteCleanDeselectAll: "Deselect All"
     },
     panels: {
         markdownInput: "Markdown Input",

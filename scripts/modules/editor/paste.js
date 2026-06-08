@@ -101,6 +101,7 @@ export async function pasteRichTextAsMarkdown({
     markdownContentKey,
     updateEditorPreview,
     showEditorToast,
+    pasteCleanOptions,
     t
 }) {
     try {
@@ -110,7 +111,12 @@ export async function pasteRichTextAsMarkdown({
             return;
         }
 
-        const markdown = clipboardContent.html ? window.convertHtmlToMarkdown(clipboardContent.html) : clipboardContent.text;
+        const html = clipboardContent.html
+            ? window.cleanPasteHtml(clipboardContent.html, pasteCleanOptions)
+            : null;
+        const markdown = html
+            ? window.convertHtmlToMarkdown(html, { skipTableStyles: Boolean(pasteCleanOptions?.tableStyle) })
+            : clipboardContent.text;
         const sanitizedMarkdown = sanitizePastedMarkdown(markdown);
 
         if (!sanitizedMarkdown) {

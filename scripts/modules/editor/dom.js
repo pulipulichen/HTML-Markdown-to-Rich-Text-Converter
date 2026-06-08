@@ -10,6 +10,21 @@ export function getEditorElements() {
     const topHeadingLevelSelect = document.getElementById("top-heading-level");
     const richTextFormatSelect = document.getElementById("rich-text-format");
     const pasteModeSelect = document.getElementById("paste-mode");
+    const pasteCleanSettingsBtn = document.getElementById("paste-clean-settings-btn");
+    const pasteCleanModal = document.getElementById("paste-clean-modal");
+    const pasteCleanCloseBtn = document.getElementById("paste-clean-close-btn");
+    const pasteCleanCloseIconBtn = document.getElementById("paste-clean-close-icon");
+    const pasteCleanSelectAllBtn = document.getElementById("paste-clean-select-all-btn");
+    const pasteCleanDeselectAllBtn = document.getElementById("paste-clean-deselect-all-btn");
+    const pasteCleanCheckboxes = {
+        font: document.getElementById("paste-clean-font"),
+        color: document.getElementById("paste-clean-color"),
+        bold: document.getElementById("paste-clean-bold"),
+        italic: document.getElementById("paste-clean-italic"),
+        links: document.getElementById("paste-clean-links"),
+        tableMetadata: document.getElementById("paste-clean-table-metadata"),
+        tableStyle: document.getElementById("paste-clean-table-style")
+    };
     const tableStyleSelect = document.getElementById("table-style");
     const codeBlockToTableCheckbox = document.getElementById("code-block-to-table");
     const sopSettingsBtn = document.getElementById("sop-settings-btn");
@@ -32,6 +47,13 @@ export function getEditorElements() {
         topHeadingLevelSelect,
         richTextFormatSelect,
         pasteModeSelect,
+        pasteCleanSettingsBtn,
+        pasteCleanModal,
+        pasteCleanCloseBtn,
+        pasteCleanCloseIconBtn,
+        pasteCleanSelectAllBtn,
+        pasteCleanDeselectAllBtn,
+        pasteCleanCheckboxes,
         tableStyleSelect,
         codeBlockToTableCheckbox,
         sopSettingsBtn,
