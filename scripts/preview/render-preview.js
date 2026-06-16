@@ -39,6 +39,7 @@ function convertCodeBlocksToSingleCellTables(container) {
         cell.innerHTML = lines.map(escapeHtml).join("<br>");
 
         pre.replaceWith(table);
+        table.after(document.createElement("br"));
     });
 }
 
@@ -101,6 +102,7 @@ function applyRichTextFormat(container, richTextFormat) {
 function applyPlainCodeBlockTableStyles(container) {
     const tables = Array.from(container.querySelectorAll('table[data-code-block-table="true"]'));
     const tableStyle = getActiveTableStyle();
+    const codeBlockTableBackgroundColor = "#f3f4f6";
 
     tables.forEach(table => {
         table.removeAttribute("style");
@@ -109,15 +111,16 @@ function applyPlainCodeBlockTableStyles(container) {
         table.setAttribute("cellpadding", "6");
         table.setAttribute("width", "100%");
         table.setAttribute("bordercolor", tableStyle.borderColor);
-        table.style.backgroundColor = "#ffffff";
+        table.style.backgroundColor = codeBlockTableBackgroundColor;
+        table.style.lineHeight = "1";
 
         Array.from(table.rows).forEach(row => {
             row.removeAttribute("style");
-            row.setAttribute("bgcolor", "#ffffff");
+            row.setAttribute("bgcolor", codeBlockTableBackgroundColor);
 
             Array.from(row.cells).forEach(cell => {
                 cell.removeAttribute("style");
-                cell.setAttribute("bgcolor", "#ffffff");
+                cell.setAttribute("bgcolor", codeBlockTableBackgroundColor);
                 cell.setAttribute("align", "left");
                 cell.setAttribute("valign", "top");
                 cell.innerHTML = `<font color="#000000" face="Consolas, monospace">${cell.innerHTML}</font>`;
@@ -132,7 +135,8 @@ function applyPlainCodeBlockTableStyles(container) {
         table.style.borderColor = borderColor;
         Array.from(table.querySelectorAll("td, th")).forEach(cell => {
             cell.style.border = `1px solid ${borderColor}`;
-            cell.style.backgroundColor = "#ffffff";
+            cell.style.backgroundColor = codeBlockTableBackgroundColor;
+            cell.style.lineHeight = "1";
         });
     });
 }

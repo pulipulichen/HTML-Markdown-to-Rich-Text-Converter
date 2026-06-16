@@ -64,7 +64,15 @@ export function loadCodeBlockToTable(codeBlockToTableCheckbox) {
         return;
     }
 
-    codeBlockToTableCheckbox.checked = localStorage.getItem(CODE_BLOCK_TO_TABLE_KEY) === "true";
+    const savedCodeBlockToTable = localStorage.getItem(CODE_BLOCK_TO_TABLE_KEY);
+
+    if (savedCodeBlockToTable === null) {
+        codeBlockToTableCheckbox.checked = true;
+        localStorage.setItem(CODE_BLOCK_TO_TABLE_KEY, "true");
+        return;
+    }
+
+    codeBlockToTableCheckbox.checked = savedCodeBlockToTable === "true";
 }
 
 export function loadTableStyle(tableStyleSelect) {
