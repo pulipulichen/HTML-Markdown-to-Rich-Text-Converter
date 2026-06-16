@@ -280,7 +280,49 @@ function applyWordTableStyles(container) {
         table.querySelectorAll("[style]").forEach(element => {
             element.removeAttribute("style");
         });
+
+        // Keep table rows at single line spacing in rich text output.
+        table.style.lineHeight = "1";
+
+        // Ensure the first row is treated as repeatable header in paged outputs.
+        const tableHead = ensureRepeatableTableHeader(table);
+        if (tableHead) {
+            tableHead.style.display = "table-header-group";
+        }
     });
+}
+
+function ensureRepeatableTableHeader(table) {
+    if (table.tHead) {
+        return table.tHead;
+    }
+
+    const firstRow = table.rows[0];
+    if (!firstRow) {
+        return null;
+    }
+
+    const thead = table.ownerDocument.createElement("thead");
+    const headerRow = firstRow.cloneNode(true);
+
+    Array.from(headerRow.cells).forEach(cell => {
+        if (cell.tagName === "TH") {
+            return;
+        }
+
+        const th = table.ownerDocument.createElement("th");
+        Array.from(cell.attributes).forEach(attribute => {
+            th.setAttribute(attribute.name, attribute.value);
+        });
+        th.innerHTML = cell.innerHTML;
+        cell.replaceWith(th);
+    });
+
+    thead.appendChild(headerRow);
+    firstRow.remove();
+    table.insertBefore(thead, table.firstChild);
+
+    return thead;
 }
 
 function getStyleTextAlign(cell) {

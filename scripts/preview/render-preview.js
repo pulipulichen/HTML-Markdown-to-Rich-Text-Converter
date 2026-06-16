@@ -109,6 +109,7 @@ function applyPlainCodeBlockTableStyles(container) {
         table.setAttribute("cellpadding", "6");
         table.setAttribute("width", "100%");
         table.setAttribute("bordercolor", tableStyle.borderColor);
+        table.style.backgroundColor = "#ffffff";
 
         Array.from(table.rows).forEach(row => {
             row.removeAttribute("style");
@@ -131,6 +132,7 @@ function applyPlainCodeBlockTableStyles(container) {
         table.style.borderColor = borderColor;
         Array.from(table.querySelectorAll("td, th")).forEach(cell => {
             cell.style.border = `1px solid ${borderColor}`;
+            cell.style.backgroundColor = "#ffffff";
         });
     });
 }

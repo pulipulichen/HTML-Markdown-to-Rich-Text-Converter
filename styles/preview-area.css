@@ -35,6 +35,9 @@
 #preview-area th, #preview-area td { border: 1px solid #dfe2e5; padding: 6px 13px; }
 #preview-area table[data-code-block-table="true"] td,
 #preview-area table[data-code-block-table="true"] th { border-style: solid; border-width: 1px; }
+#preview-area table[data-code-block-table="true"] tr,
+#preview-area table[data-code-block-table="true"] td,
+#preview-area table[data-code-block-table="true"] th { background-color: #ffffff; }
 #preview-area table[data-code-block-table="true"] tr:nth-child(2n) { background-color: #ffffff; }
 #preview-area tr:nth-child(2n) { background-color: #f6f8fa; }
 #preview-area a { color: #0366d6; text-decoration: none; }
