@@ -14,6 +14,7 @@
 
 - Moved editor and preview toolbar actions from the top header into a **sticky two-column navbar** above the Markdown Input and Live Preview panels (left: Clear, Load Demo, Remove Empty Lines, paste mode, paste-clean settings, Paste Rich Text; right: Render Settings, Copy Rich Text).
 - Simplified the top header to the app title and language selector only; moved Render Settings out of the Live Preview panel header into the preview toolbar.
+- Defaulted **Convert code blocks to single-cell table** (`code_block_to_table`) to enabled when no saved preference exists in `localStorage`.
 
 ### Improved
 
@@ -21,10 +22,12 @@
 - Improved rich-text paste table metadata cleanup to remove `xmlns`, `dir`, and `data-*` attributes from table-related elements while keeping structural presentation attributes until table-style cleanup runs.
 - Improved rich-text paste table style cleanup to strip `border`, `cellpadding`, `cellspacing`, `width`, `bordercolor`, and related attributes down to bare `<table>` markup.
 - Improved HTML-to-Markdown conversion during paste to skip `applyWordTableStyles` when table-style cleanup is enabled, so stripped table attributes are not re-applied after sanitization.
+- Improved Word-friendly table output by wrapping the first row in `<thead>` for repeatable page headers and applying single line-height (`line-height: 1`) on tables.
+- Updated code-block single-cell tables to use a light gray background (`#f3f4f6`), tighter line-height, and a trailing line break after each converted table.
 
 ### Fixed
 
-- Fixed bold preview for CommonMark edge cases by trimming spaces inside `**...**` (for example `** text**`) and keeping the punctuation-then-CJK closing-delimiter normalization so marked can render `<strong>`.
+- Fixed bold preview for CommonMark edge cases by trimming spaces inside `**...**` (for example `** text**`) and inserting a space after closing `**` when punctuation is followed immediately by a letter/number (for example `**（untagged）**範例`, `**標題：**內文`), while leaving fenced and inline code untouched.
 
 ## 1.0.4
 
