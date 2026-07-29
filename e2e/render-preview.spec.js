@@ -39,3 +39,30 @@ test('renders bold when closing ** follows punctuation then CJK text', async ({ 
   await expect(preview.locator('strong')).toHaveText('無 VLAN（untagged）');
   await expect(preview.locator('li')).toContainText('範例：');
 });
+
+test('renders bold when opening ** has a leading space inside the markers', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('1. ** PVE 基礎環境建置**：於十二臺\n2. **PVE Cluster 與共享儲存整合 **：建立多節點');
+
+  await expect(preview.locator('strong').nth(0)).toHaveText('PVE 基礎環境建置');
+  await expect(preview.locator('strong').nth(1)).toHaveText('PVE Cluster 與共享儲存整合');
+  await expect(preview.locator('li').nth(0)).not.toContainText('**');
+  await expect(preview.locator('li').nth(1)).not.toContainText('**');
+});
+
+test('renders bold when colon is inside ** and followed by CJK text', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('1. **PVE 基礎環境建置：**於十二臺');
+
+  await expect(preview.locator('strong')).toHaveText('PVE 基礎環境建置：');
+  await expect(preview.locator('li')).toContainText('於十二臺');
+  await expect(preview.locator('li')).not.toContainText('**');
+});

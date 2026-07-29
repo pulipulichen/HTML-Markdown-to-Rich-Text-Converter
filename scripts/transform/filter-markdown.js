@@ -21,16 +21,19 @@ function filterMarkdown(markdown) {
 
     markdown = markdown.replaceAll("\n</pre>", "</pre>");
 
-    // CommonMark: closing ** after punctuation is not right-flanking when
-    // followed immediately by a letter (e.g. **（untagged）**範例).
+    // CommonMark bold quirks: trim spaces inside **...**, and insert a space
+    // after closing ** when it ends with punctuation then a letter/number
+    // (e.g. **（untagged）**範例, **標題：**內文).
     markdown = normalizeBoldDelimiters(markdown);
 
     return markdown;
 }
 
 /**
- * Insert a space after closing ** when the bold span ends with punctuation
- * and the next character is a letter/number, so marked can render <strong>.
+ * Normalize **bold** so marked can render <strong>:
+ * - Trim leading/trailing spaces/tabs inside **...** (e.g. ** text** → **text**)
+ * - Insert a space after closing ** when the bold span ends with punctuation
+ *   and the next character is a letter/number
  * Leaves fenced / inline code untouched.
  */
 function normalizeBoldDelimiters(markdown) {
@@ -40,12 +43,23 @@ function normalizeBoldDelimiters(markdown) {
 }
 
 function normalizeBoldDelimitersInText(text) {
-    return text.replace(/\*\*((?:(?!\*\*)[\s\S])+?)\*\*(?=[\p{L}\p{N}])/gu, (match, inner) => {
-        const trimmedInner = inner.replace(/[ \t]+$/, "");
-        if (!/[\p{P}\p{S}]$/u.test(trimmedInner)) {
+    return text.replace(/\*\*((?:(?!\*\*)[\s\S])+?)\*\*/g, (match, inner, offset, full) => {
+        const trimmedInner = inner.replace(/^[ \t]+|[ \t]+$/g, "");
+        if (!trimmedInner) {
             return match;
         }
-        return `**${trimmedInner}** `;
+
+        let result = `**${trimmedInner}**`;
+        const nextChar = full[offset + match.length];
+        if (
+            nextChar &&
+            /[\p{L}\p{N}]/u.test(nextChar) &&
+            /[\p{P}\p{S}]$/u.test(trimmedInner)
+        ) {
+            result += " ";
+        }
+
+        return result;
     });
 }
 

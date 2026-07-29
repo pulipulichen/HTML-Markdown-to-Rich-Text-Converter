@@ -21,6 +21,10 @@
 - Improved rich-text paste table style cleanup to strip `border`, `cellpadding`, `cellspacing`, `width`, `bordercolor`, and related attributes down to bare `<table>` markup.
 - Improved HTML-to-Markdown conversion during paste to skip `applyWordTableStyles` when table-style cleanup is enabled, so stripped table attributes are not re-applied after sanitization.
 
+### Fixed
+
+- Fixed bold preview for CommonMark edge cases by trimming spaces inside `**...**` (for example `** text**`) and keeping the punctuation-then-CJK closing-delimiter normalization so marked can render `<strong>`.
+
 ## 1.0.4
 
 ### Added
