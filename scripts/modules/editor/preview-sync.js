@@ -1,11 +1,21 @@
-export function createEditorSync({ markdownInput, previewArea, topHeadingLevelSelect, richTextFormatSelect, codeBlockToTableCheckbox, messageBox, t }) {
+export function createEditorSync({
+    markdownInput,
+    previewArea,
+    topHeadingLevelSelect,
+    richTextFormatSelect,
+    codeBlockToTableCheckbox,
+    removeHeadingBoldCheckbox,
+    messageBox,
+    t
+}) {
     function updateEditorPreview() {
         updatePreview(
             markdownInput,
             previewArea,
             topHeadingLevelSelect.value,
             richTextFormatSelect.value,
-            codeBlockToTableCheckbox.checked
+            codeBlockToTableCheckbox.checked,
+            removeHeadingBoldCheckbox?.checked ?? true
         );
     }
 

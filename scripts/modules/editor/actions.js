@@ -4,6 +4,7 @@ import {
     PASTE_MODE_KEY,
     TABLE_STYLE_KEY,
     CODE_BLOCK_TO_TABLE_KEY,
+    REMOVE_HEADING_BOLD_KEY,
     MARKDOWN_CONTENT_KEY,
     loadDefaultMarkdown,
     updateRichTextFormatUI
@@ -33,6 +34,7 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
         pasteCleanDeselectAllBtn,
         tableStyleSelect,
         codeBlockToTableCheckbox,
+        removeHeadingBoldCheckbox,
         renderSettingsElements
     } = elements;
 
@@ -55,6 +57,11 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
     codeBlockToTableCheckbox.addEventListener("change", () => {
         updateEditorPreview();
         localStorage.setItem(CODE_BLOCK_TO_TABLE_KEY, codeBlockToTableCheckbox.checked ? "true" : "false");
+    });
+
+    removeHeadingBoldCheckbox?.addEventListener("change", () => {
+        updateEditorPreview();
+        localStorage.setItem(REMOVE_HEADING_BOLD_KEY, removeHeadingBoldCheckbox.checked ? "true" : "false");
     });
 
     pasteModeSelect.addEventListener("change", () => {

@@ -85,3 +85,41 @@ test('converts code block to table only when checkbox is enabled', async ({ page
   await expect(preview.locator('pre')).toHaveCount(0);
   await expect(preview.locator('table[data-code-block-table="true"]')).toHaveCount(1);
 });
+
+test('removes bold from headings by default and keeps it when disabled', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+  const headingMarkdown = '# **Bold Title**\n\nParagraph with **bold**.';
+
+  await page.locator('#sop-settings-btn').click();
+  const removeHeadingBold = page.locator('#remove-heading-bold');
+  await expect(removeHeadingBold).toBeChecked();
+  await page.locator('#sop-settings-close-btn').click();
+
+  await input.fill(headingMarkdown);
+  await expect(preview.locator('h2')).toHaveText('Bold Title');
+  await expect(preview.locator('h2 strong, h2 b')).toHaveCount(0);
+  await expect(preview.locator('p strong')).toHaveText('bold');
+
+  await page.locator('#sop-settings-btn').click();
+  await removeHeadingBold.uncheck();
+  await page.locator('#sop-settings-close-btn').click();
+
+  await expect(preview.locator('h2 strong')).toHaveText('Bold Title');
+  await expect(preview.locator('p strong')).toHaveText('bold');
+});
+
+test('keeps remove-heading-bold selection after reload', async ({ page }) => {
+  await page.goto('/');
+
+  await page.locator('#sop-settings-btn').click();
+  await page.locator('#remove-heading-bold').uncheck();
+  await page.locator('#sop-settings-close-btn').click();
+
+  await page.reload();
+  await page.locator('#sop-settings-btn').click();
+
+  await expect(page.locator('#remove-heading-bold')).not.toBeChecked();
+});

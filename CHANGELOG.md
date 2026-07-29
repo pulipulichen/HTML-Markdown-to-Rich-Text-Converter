@@ -8,6 +8,7 @@
 - Added **Select All** and **Deselect All** controls in the paste-clean modal for faster bulk toggling.
 - Added `scripts/transform/clean-paste-html.js` to sanitize clipboard HTML before Markdown conversion, and `scripts/modules/editor/paste-clean-settings.js` for option load/save helpers.
 - Added English and Traditional Chinese labels for all paste-clean controls and hints.
+- Added a Render Settings checkbox **Remove bold formatting in headings** (`remove_heading_bold`), enabled by default, that unwraps `<strong>`/`<b>` inside heading tags in the live preview while leaving body bold unchanged.
 
 ### Changed
 

@@ -6,7 +6,8 @@ function updatePreview(
     previewArea,
     topHeadingLevel = DEFAULT_TOP_HEADING_LEVEL,
     richTextFormat = DEFAULT_RICH_TEXT_FORMAT,
-    codeBlockToTable = false
+    codeBlockToTable = false,
+    removeHeadingBold = true
 ) {
     let rawValue = markdownInput.value;
     rawValue = filterMarkdown(rawValue);
@@ -14,11 +15,44 @@ function updatePreview(
     previewArea.innerHTML = marked.parse(rawValue);
     normalizeHeadingLevels(previewArea, topHeadingLevel);
 
+    if (removeHeadingBold) {
+        removeBoldFormattingFromHeadings(previewArea);
+    }
+
     if (codeBlockToTable) {
         convertCodeBlocksToSingleCellTables(previewArea);
     }
 
     applyRichTextFormat(previewArea, richTextFormat);
+}
+
+function removeBoldFormattingFromHeadings(container) {
+    const headings = Array.from(container.querySelectorAll("h1, h2, h3, h4, h5, h6"));
+
+    headings.forEach(heading => {
+        Array.from(heading.querySelectorAll("strong, b")).forEach(boldElement => {
+            boldElement.replaceWith(...boldElement.childNodes);
+        });
+
+        Array.from(heading.querySelectorAll("[style]")).forEach(element => {
+            const style = element.getAttribute("style");
+            if (!style || !/font-weight\s*:/i.test(style)) {
+                return;
+            }
+
+            const nextStyle = style
+                .replace(/font-weight\s*:\s*[^;]+;?/gi, "")
+                .replace(/;\s*;/g, ";")
+                .replace(/^\s*;\s*|\s*;\s*$/g, "")
+                .trim();
+
+            if (nextStyle) {
+                element.setAttribute("style", nextStyle);
+            } else {
+                element.removeAttribute("style");
+            }
+        });
+    });
 }
 
 function convertCodeBlocksToSingleCellTables(container) {

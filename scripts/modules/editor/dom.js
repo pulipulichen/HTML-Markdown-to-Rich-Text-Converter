@@ -27,6 +27,7 @@ export function getEditorElements() {
     };
     const tableStyleSelect = document.getElementById("table-style");
     const codeBlockToTableCheckbox = document.getElementById("code-block-to-table");
+    const removeHeadingBoldCheckbox = document.getElementById("remove-heading-bold");
     const sopSettingsBtn = document.getElementById("sop-settings-btn");
     const sopSettingsModal = document.getElementById("sop-settings-modal");
     const sopSettingsCloseBtn = document.getElementById("sop-settings-close-btn");
@@ -56,6 +57,7 @@ export function getEditorElements() {
         pasteCleanCheckboxes,
         tableStyleSelect,
         codeBlockToTableCheckbox,
+        removeHeadingBoldCheckbox,
         sopSettingsBtn,
         sopSettingsModal,
         sopSettingsCloseBtn,

@@ -21,6 +21,7 @@ export const EN_TRANSLATIONS = {
         richTextFormatSop: "SOP Manual",
         richTextFormatPlain: "Plain",
         codeBlockToTable: "Convert code blocks to single-cell table",
+        removeHeadingBold: "Remove bold formatting in headings",
         sopSettings: "SOP Settings",
         renderSettings: "Render Settings",
         renderSettingsTitle: "Render Settings",

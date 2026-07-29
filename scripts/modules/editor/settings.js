@@ -3,6 +3,7 @@ export const RICH_TEXT_FORMAT_KEY = "rich_text_format";
 export const PASTE_MODE_KEY = "paste_mode";
 export const TABLE_STYLE_KEY = "table_style";
 export const CODE_BLOCK_TO_TABLE_KEY = "code_block_to_table";
+export const REMOVE_HEADING_BOLD_KEY = "remove_heading_bold";
 export const MARKDOWN_CONTENT_KEY = "markdown_content";
 
 export const VALID_TABLE_STYLES = ["gray", "blue", "yellow", "red", "green", "purple", "brown"];
@@ -73,6 +74,22 @@ export function loadCodeBlockToTable(codeBlockToTableCheckbox) {
     }
 
     codeBlockToTableCheckbox.checked = savedCodeBlockToTable === "true";
+}
+
+export function loadRemoveHeadingBold(removeHeadingBoldCheckbox) {
+    if (!removeHeadingBoldCheckbox) {
+        return;
+    }
+
+    const savedRemoveHeadingBold = localStorage.getItem(REMOVE_HEADING_BOLD_KEY);
+
+    if (savedRemoveHeadingBold === null) {
+        removeHeadingBoldCheckbox.checked = true;
+        localStorage.setItem(REMOVE_HEADING_BOLD_KEY, "true");
+        return;
+    }
+
+    removeHeadingBoldCheckbox.checked = savedRemoveHeadingBold === "true";
 }
 
 export function loadTableStyle(tableStyleSelect) {

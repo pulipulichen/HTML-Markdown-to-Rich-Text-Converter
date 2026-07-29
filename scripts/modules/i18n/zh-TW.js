@@ -21,6 +21,7 @@ export const ZH_TW_TRANSLATIONS = {
         richTextFormatSop: "SOP手冊格式",
         richTextFormatPlain: "無格式",
         codeBlockToTable: "將程式碼語法轉換成單格表格",
+        removeHeadingBold: "移除標題中粗體的格式",
         sopSettings: "SOP 設定",
         renderSettings: "渲染設定",
         renderSettingsTitle: "渲染設定",

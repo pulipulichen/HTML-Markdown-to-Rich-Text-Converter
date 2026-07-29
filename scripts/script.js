@@ -5,7 +5,8 @@ import {
     loadPasteMode,
     loadRichTextFormat,
     loadTableStyle,
-    loadCodeBlockToTable
+    loadCodeBlockToTable,
+    loadRemoveHeadingBold
 } from "./modules/editor/settings.js";
 import { getEditorElements } from "./modules/editor/dom.js";
 import { createEditorSync } from "./modules/editor/preview-sync.js";
@@ -27,6 +28,7 @@ const {
     pasteCleanCheckboxes,
     tableStyleSelect,
     codeBlockToTableCheckbox,
+    removeHeadingBoldCheckbox,
     sopSettingsBtn,
     sopSettingsModal,
     sopSettingsCloseBtn,
@@ -44,6 +46,7 @@ const {
     topHeadingLevelSelect: elements.topHeadingLevelSelect,
     richTextFormatSelect: elements.richTextFormatSelect,
     codeBlockToTableCheckbox: elements.codeBlockToTableCheckbox,
+    removeHeadingBoldCheckbox: elements.removeHeadingBoldCheckbox,
     messageBox: elements.messageBox,
     t
 });
@@ -66,6 +69,7 @@ window.addEventListener("load", async () => {
     loadTopHeadingLevel(topHeadingLevelSelect);
     loadRichTextFormat(richTextFormatSelect, renderSettingsElements);
     loadCodeBlockToTable(codeBlockToTableCheckbox);
+    loadRemoveHeadingBold(removeHeadingBoldCheckbox);
     loadPasteMode(pasteModeSelect);
     loadPasteCleanOptions(pasteCleanCheckboxes);
     loadTableStyle(tableStyleSelect);
