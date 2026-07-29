@@ -27,3 +27,15 @@ test('normalizes heading levels based on selected top level', async ({ page }) =
   await expect(preview.locator('h3')).toHaveText('Main Title');
   await expect(preview.locator('h4')).toHaveText('Sub Title');
 });
+
+test('renders bold when closing ** follows punctuation then CJK text', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('- **無 VLAN（untagged）**範例：');
+
+  await expect(preview.locator('strong')).toHaveText('無 VLAN（untagged）');
+  await expect(preview.locator('li')).toContainText('範例：');
+});
