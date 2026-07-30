@@ -1,9 +1,23 @@
 #preview-area {
-    font-family: "Microsoft JhengHei", 微軟正黑體, Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: var(--preview-font-family, "Microsoft JhengHei", 微軟正黑體, Arial, "Helvetica Neue", Helvetica, sans-serif);
+    font-size: 12pt;
     color: black;
+    --preview-line-height: 1.5;
+    --preview-font-family: "Microsoft JhengHei", 微軟正黑體, Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 /* 預覽區內的 HTML 基本樣式 */
+#preview-area h1,
+#preview-area h2,
+#preview-area h3,
+#preview-area h4,
+#preview-area h5,
+#preview-area h6 {
+    /* Keep heading with the following paragraph when printing / pasting to Word */
+    page-break-after: avoid;
+    break-after: avoid-page;
+}
+
 #preview-area h1 { 
     font-size: 24pt; 
     font-weight: bold; 
@@ -24,15 +38,29 @@
 #preview-area h3 { font-size: 16pt; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
 #preview-area p { 
     margin-bottom: 12pt; 
-    line-height: 1.5; 
+    line-height: var(--preview-line-height, 1.5); 
 }
 #preview-area ul { list-style-type: disc; padding-left: 2em; margin-bottom: 1em; }
 #preview-area ol { list-style-type: decimal; padding-left: 2em; margin-bottom: 1em; }
+#preview-area li {
+    line-height: var(--preview-line-height, 1.5);
+}
 #preview-area code { background-color: rgba(27,31,35,0.05); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; }
 #preview-area pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; overflow: auto; margin-bottom: 1em; }
 #preview-area blockquote { border-left: 0.25em solid #dfe2e5; color: #6a737d; padding: 0 1em; margin-bottom: 1em; }
 #preview-area table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
-#preview-area th, #preview-area td { border: 1px solid #dfe2e5; padding: 6px 13px; }
+#preview-area table[data-slide-table="true"] { width: 960px; }
+#preview-area table[data-slide-table="true"][data-slide-table-width="half"] { width: 450px; }
+#preview-area table[data-slide-table="true"][data-slide-table-height="full"] { height: 420px; }
+#preview-area table[data-slide-table="true"][data-slide-table-height="half"] { height: 210px; }
+#preview-area table[data-slide-table="true"][data-slide-table-height="auto"] { height: auto; }
+#preview-area table[data-slide-table="true"] tr:nth-child(2n) { background-color: transparent; }
+#preview-area table[data-slide-table="true"] td,
+#preview-area table[data-slide-table="true"] th {
+    text-align: center;
+    vertical-align: middle;
+}
+#preview-area th, #preview-area td { border: 1px solid #dfe2e5; padding: 2px 6px; }
 #preview-area table[data-code-block-table="true"] td,
 #preview-area table[data-code-block-table="true"] th { border-style: solid; border-width: 1px; }
 #preview-area table[data-code-block-table="true"] tr,

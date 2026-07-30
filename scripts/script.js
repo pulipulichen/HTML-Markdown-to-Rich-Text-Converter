@@ -6,7 +6,17 @@ import {
     loadRichTextFormat,
     loadTableStyle,
     loadCodeBlockToTable,
-    loadRemoveHeadingBold
+    loadBlankLineAfterTables,
+    loadRemoveHeadingBold,
+    loadSlideLineHeight,
+    loadSlideTableFontSize,
+    loadSlideTextFontSize,
+    loadSlideApplyTableColorsToText,
+    loadSlideHeaderType,
+    loadSlideTableWidth,
+    loadSlideTableHeight,
+    loadParagraphLineHeight,
+    loadPreviewFont
 } from "./modules/editor/settings.js";
 import { getEditorElements } from "./modules/editor/dom.js";
 import { createEditorSync } from "./modules/editor/preview-sync.js";
@@ -28,7 +38,17 @@ const {
     pasteCleanCheckboxes,
     tableStyleSelect,
     codeBlockToTableCheckbox,
+    blankLineAfterTablesCheckbox,
     removeHeadingBoldCheckbox,
+    slideLineHeightSelect,
+    slideTableFontSizeSelect,
+    slideTextFontSizeSelect,
+    slideApplyTableColorsToTextCheckbox,
+    slideHeaderTypeSelect,
+    slideTableWidthSelect,
+    slideTableHeightSelect,
+    paragraphLineHeightSelect,
+    previewFontSelect,
     sopSettingsBtn,
     sopSettingsModal,
     sopSettingsCloseBtn,
@@ -46,7 +66,16 @@ const {
     topHeadingLevelSelect: elements.topHeadingLevelSelect,
     richTextFormatSelect: elements.richTextFormatSelect,
     codeBlockToTableCheckbox: elements.codeBlockToTableCheckbox,
+    blankLineAfterTablesCheckbox: elements.blankLineAfterTablesCheckbox,
     removeHeadingBoldCheckbox: elements.removeHeadingBoldCheckbox,
+    slideLineHeightSelect: elements.slideLineHeightSelect,
+    slideTableFontSizeSelect: elements.slideTableFontSizeSelect,
+    slideTextFontSizeSelect: elements.slideTextFontSizeSelect,
+    slideApplyTableColorsToTextCheckbox: elements.slideApplyTableColorsToTextCheckbox,
+    slideHeaderTypeSelect: elements.slideHeaderTypeSelect,
+    slideTableWidthSelect: elements.slideTableWidthSelect,
+    slideTableHeightSelect: elements.slideTableHeightSelect,
+    paragraphLineHeightSelect: elements.paragraphLineHeightSelect,
     messageBox: elements.messageBox,
     t
 });
@@ -69,7 +98,17 @@ window.addEventListener("load", async () => {
     loadTopHeadingLevel(topHeadingLevelSelect);
     loadRichTextFormat(richTextFormatSelect, renderSettingsElements);
     loadCodeBlockToTable(codeBlockToTableCheckbox);
+    loadBlankLineAfterTables(blankLineAfterTablesCheckbox);
     loadRemoveHeadingBold(removeHeadingBoldCheckbox);
+    loadSlideLineHeight(slideLineHeightSelect);
+    loadSlideTableFontSize(slideTableFontSizeSelect);
+    loadSlideTextFontSize(slideTextFontSizeSelect);
+    loadSlideApplyTableColorsToText(slideApplyTableColorsToTextCheckbox);
+    loadSlideHeaderType(slideHeaderTypeSelect);
+    loadSlideTableWidth(slideTableWidthSelect);
+    loadSlideTableHeight(slideTableHeightSelect);
+    loadParagraphLineHeight(paragraphLineHeightSelect, elements.previewArea);
+    loadPreviewFont(previewFontSelect, elements.previewArea);
     loadPasteMode(pasteModeSelect);
     loadPasteCleanOptions(pasteCleanCheckboxes);
     loadTableStyle(tableStyleSelect);

@@ -1,63 +1,79 @@
 const TABLE_STYLE_THEMES = {
     gray: {
-        borderColor: "#6b7280",
-        headerBackground: "#4b5563",
-        evenRowBackground: "#e5e7eb",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#111827"
+        borderColor: "#B8C0C8",
+        headerBackground: "#465362",
+        secondaryHeaderBackground: "#687586",
+        evenRowBackground: "#E9EDF1",
+        oddRowBackground: "#FAFBFC",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#27313B"
     },
     blue: {
-        borderColor: "#4b5563",
-        headerBackground: "#1f4e79",
-        evenRowBackground: "#d9eaf7",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#1f2937"
+        borderColor: "#B9C9D6",
+        headerBackground: "#244E73",
+        secondaryHeaderBackground: "#3F6F99",
+        evenRowBackground: "#E8F0F6",
+        oddRowBackground: "#F7F9FB",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#243746"
     },
     yellow: {
-        borderColor: "#a16207",
-        headerBackground: "#ca8a04",
-        evenRowBackground: "#fef3c7",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#111827",
-        bodyTextColor: "#78350f"
+        borderColor: "#D2BE8B",
+        headerBackground: "#8A631D",
+        secondaryHeaderBackground: "#B68422",
+        evenRowBackground: "#F5EACD",
+        oddRowBackground: "#FFFDF8",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#332E27"
     },
     red: {
-        borderColor: "#991b1b",
-        headerBackground: "#b91c1c",
-        evenRowBackground: "#fee2e2",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#7f1d1d"
+        borderColor: "#D2B4B9",
+        headerBackground: "#8E2F3F",
+        secondaryHeaderBackground: "#A44652",
+        evenRowBackground: "#F3E5E7",
+        oddRowBackground: "#FCF9F9",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#3B2B2E"
     },
     green: {
-        borderColor: "#166534",
-        headerBackground: "#15803d",
-        evenRowBackground: "#dcfce7",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#14532d"
+        borderColor: "#B8CBC3",
+        headerBackground: "#2F5D50",
+        secondaryHeaderBackground: "#4F776B",
+        evenRowBackground: "#E5EFEA",
+        oddRowBackground: "#FAFCFB",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#24352F"
     },
     purple: {
-        borderColor: "#6b21a8",
-        headerBackground: "#7e22ce",
-        evenRowBackground: "#f3e8ff",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#581c87"
+        borderColor: "#CFC4D9",
+        headerBackground: "#5B4778",
+        secondaryHeaderBackground: "#76658E",
+        evenRowBackground: "#EEE8F3",
+        oddRowBackground: "#F5F2F8",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#3F3250"
     },
     brown: {
-        borderColor: "#78350f",
-        headerBackground: "#92400e",
-        evenRowBackground: "#fef3c7",
-        oddRowBackground: "#ffffff",
-        headerTextColor: "#ffffff",
-        bodyTextColor: "#78350f"
+        borderColor: "#CDBEB4",
+        headerBackground: "#6B4A3A",
+        secondaryHeaderBackground: "#85614E",
+        evenRowBackground: "#EEE6E0",
+        oddRowBackground: "#FBF9F7",
+        headerTextColor: "#FFFFFF",
+        secondaryHeaderTextColor: "#FFFFFF",
+        bodyTextColor: "#382F2A"
     }
 };
 const DEFAULT_TABLE_STYLE_THEME = "gray";
 let currentTableStyleTheme = DEFAULT_TABLE_STYLE_THEME;
+const DEFAULT_PREVIEW_FONT_FACE = "Microsoft JhengHei, Arial";
+let currentPreviewFontFace = DEFAULT_PREVIEW_FONT_FACE;
 
 function normalizeTableStyleTheme(theme) {
     return Object.hasOwn(TABLE_STYLE_THEMES, theme) ? theme : DEFAULT_TABLE_STYLE_THEME;
@@ -76,8 +92,19 @@ function getActiveTableStyle() {
     return TABLE_STYLE_THEMES[getTableStyleTheme()];
 }
 
+function getPreviewFontFace() {
+    return currentPreviewFontFace || DEFAULT_PREVIEW_FONT_FACE;
+}
+
+function setPreviewFontFace(fontFace) {
+    currentPreviewFontFace = String(fontFace || "").trim() || DEFAULT_PREVIEW_FONT_FACE;
+    return currentPreviewFontFace;
+}
+
 window.getTableStyleTheme = getTableStyleTheme;
 window.setTableStyleTheme = setTableStyleTheme;
+window.getPreviewFontFace = getPreviewFontFace;
+window.setPreviewFontFace = setPreviewFontFace;
 
 function unwrapBlockElementsInListItems(root) {
     root.querySelectorAll("li").forEach(listItem => {
@@ -243,7 +270,7 @@ function applyWordTableStyles(container) {
         table.removeAttribute("style");
         table.setAttribute("border", "1");
         table.setAttribute("cellspacing", "0");
-        table.setAttribute("cellpadding", "6");
+        table.setAttribute("cellpadding", "0");
         table.setAttribute("width", "100%");
         table.setAttribute("bordercolor", tableStyle.borderColor);
 
@@ -289,6 +316,10 @@ function applyWordTableStyles(container) {
         if (tableHead) {
             tableHead.style.display = "table-header-group";
         }
+
+        Array.from(table.querySelectorAll("td, th")).forEach(cell => {
+            cell.style.padding = "2px 6px";
+        });
     });
 }
 
@@ -331,7 +362,7 @@ function getStyleTextAlign(cell) {
     return match ? match[1].trim() : "";
 }
 
-function wrapCellContent(cell, color, isBold, isItalic) {
+function wrapCellContent(cell, color, isBold, isItalic, fontSize) {
     let content = cell.innerHTML;
 
     if (isItalic) {
@@ -342,5 +373,6 @@ function wrapCellContent(cell, color, isBold, isItalic) {
         content = `<b>${content}</b>`;
     }
 
-    cell.innerHTML = `<font color="${color}" face="Microsoft JhengHei, Arial">${content}</font>`;
+    const sizeStyle = fontSize ? ` style="font-size: ${fontSize}pt"` : "";
+    cell.innerHTML = `<font color="${color}" face="${getPreviewFontFace()}"${sizeStyle}>${content}</font>`;
 }

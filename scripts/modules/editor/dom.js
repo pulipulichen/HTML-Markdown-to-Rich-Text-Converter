@@ -27,12 +27,25 @@ export function getEditorElements() {
     };
     const tableStyleSelect = document.getElementById("table-style");
     const codeBlockToTableCheckbox = document.getElementById("code-block-to-table");
+    const blankLineAfterTablesCheckbox = document.getElementById("blank-line-after-tables");
     const removeHeadingBoldCheckbox = document.getElementById("remove-heading-bold");
+    const slideLineHeightSelect = document.getElementById("slide-line-height");
+    const slideTableFontSizeSelect = document.getElementById("slide-table-font-size");
+    const slideTextFontSizeSelect = document.getElementById("slide-text-font-size");
+    const slideApplyTableColorsToTextCheckbox = document.getElementById("slide-apply-table-colors-to-text");
+    const slideHeaderTypeSelect = document.getElementById("slide-header-type");
+    const slideTableWidthSelect = document.getElementById("slide-table-width");
+    const slideTableHeightSelect = document.getElementById("slide-table-height");
+    const paragraphLineHeightSelect = document.getElementById("paragraph-line-height");
+    const previewFontSelect = document.getElementById("preview-font");
     const sopSettingsBtn = document.getElementById("sop-settings-btn");
     const sopSettingsModal = document.getElementById("sop-settings-modal");
     const sopSettingsCloseBtn = document.getElementById("sop-settings-close-btn");
     const sopSettingsCloseIconBtn = document.getElementById("sop-settings-close-icon");
-    const renderSettingsSopSection = document.getElementById("render-settings-sop-section");
+    const renderSettingsTableStyleSection = document.getElementById("render-settings-table-style-section");
+    const renderSettingsDocumentSection = document.getElementById("render-settings-document-section");
+    const renderSettingsExtraSection = document.getElementById("render-settings-extra-section");
+    const renderSettingsSlideSection = document.getElementById("render-settings-slide-section");
     const sopTopHeadingHint = document.getElementById("sop-top-heading-hint");
     const markdownDropOverlay = document.getElementById("markdown-drop-overlay");
 
@@ -57,14 +70,27 @@ export function getEditorElements() {
         pasteCleanCheckboxes,
         tableStyleSelect,
         codeBlockToTableCheckbox,
+        blankLineAfterTablesCheckbox,
         removeHeadingBoldCheckbox,
+        slideLineHeightSelect,
+        slideTableFontSizeSelect,
+        slideTextFontSizeSelect,
+        slideApplyTableColorsToTextCheckbox,
+        slideHeaderTypeSelect,
+        slideTableWidthSelect,
+        slideTableHeightSelect,
+        paragraphLineHeightSelect,
+        previewFontSelect,
         sopSettingsBtn,
         sopSettingsModal,
         sopSettingsCloseBtn,
         sopSettingsCloseIconBtn,
         markdownDropOverlay,
         renderSettingsElements: {
-            sopSection: renderSettingsSopSection,
+            tableStyleSection: renderSettingsTableStyleSection,
+            documentSection: renderSettingsDocumentSection,
+            extraSection: renderSettingsExtraSection,
+            slideSection: renderSettingsSlideSection,
             sopTopHeadingHint
         }
     };

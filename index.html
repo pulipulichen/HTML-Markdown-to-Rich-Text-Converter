@@ -20,6 +20,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
     <script src="https://unpkg.com/turndown-plugin-gfm/dist/turndown-plugin-gfm.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/preview-area.css">
     <link rel="stylesheet" href="styles/code.css">
@@ -198,7 +201,7 @@
     </div>
 
     <div id="sop-settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="sop-settings-title">
-        <div class="w-full max-w-md rounded-xl bg-white shadow-xl border border-gray-200">
+        <div class="w-full max-w-2xl rounded-xl bg-white shadow-xl border border-gray-200">
             <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
                 <h2 id="sop-settings-title" class="text-base font-semibold text-gray-800" data-i18n="controls.renderSettingsTitle">Render Settings</h2>
                 <button id="sop-settings-close-icon" type="button" class="text-gray-400 hover:text-gray-600 transition-colors" data-i18n-attr="aria-label:controls.close" aria-label="Close">
@@ -207,50 +210,142 @@
                     </svg>
                 </button>
             </div>
-            <div class="space-y-5 px-5 py-5">
+            <div class="space-y-4 px-5 py-5 max-h-[min(80vh,40rem)] overflow-y-auto">
                 <label class="flex flex-col gap-2 text-sm text-gray-700">
                     <span data-i18n="controls.richTextFormat">Copy Rich Text Format</span>
                     <select id="rich-text-format" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
                         <option value="sop" data-i18n="controls.richTextFormatSop">SOP Manual</option>
                         <option value="plain" data-i18n="controls.richTextFormatPlain">Plain</option>
+                        <option value="slide-16-9" data-i18n="controls.richTextFormatSlide169">Slide 16:9</option>
                     </select>
                 </label>
-                <div class="flex flex-col gap-2 text-sm text-gray-700">
-                    <label class="flex flex-col gap-2">
-                        <span data-i18n="editor.topHeadingLevel">Top Heading Level</span>
-                        <select id="top-heading-level" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
-                            <option value="1">h1</option>
-                            <option value="2" selected>h2</option>
-                            <option value="3">h3</option>
-                            <option value="4">h4</option>
-                            <option value="5">h5</option>
-                            <option value="6">h6</option>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+                    <label class="flex flex-col gap-2 text-sm text-gray-700">
+                        <span data-i18n="controls.previewFont">Font</span>
+                        <select id="preview-font" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                            <option value="microsoft-jhenghei" selected data-i18n="controls.previewFontMicrosoftJhengHei">Microsoft JhengHei</option>
+                            <option value="noto-sans-tc" data-i18n="controls.previewFontNotoSansTc">Noto Sans TC</option>
                         </select>
                     </label>
-                    <p id="sop-top-heading-hint" class="text-xs text-gray-500" data-i18n="controls.sopTopHeadingHint">For SOP manuals, h2 is recommended as the top heading level.</p>
+
+                    <div id="render-settings-table-style-section" class="contents">
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.tableStyle">Table Style</span>
+                            <select id="table-style" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="gray" data-i18n="controls.tableStyleGray">Gray</option>
+                                <option value="blue" data-i18n="controls.tableStyleBlue">Blue</option>
+                                <option value="yellow" data-i18n="controls.tableStyleYellow">Yellow</option>
+                                <option value="red" data-i18n="controls.tableStyleRed">Red</option>
+                                <option value="green" data-i18n="controls.tableStyleGreen">Green</option>
+                                <option value="purple" data-i18n="controls.tableStylePurple">Purple</option>
+                                <option value="brown" data-i18n="controls.tableStyleBrown">Brown</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="render-settings-document-section" class="contents">
+                        <div class="flex flex-col gap-2 text-sm text-gray-700">
+                            <label class="flex flex-col gap-2">
+                                <span data-i18n="editor.topHeadingLevel">Top Heading Level</span>
+                                <select id="top-heading-level" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                    <option value="1">h1</option>
+                                    <option value="2" selected>h2</option>
+                                    <option value="3">h3</option>
+                                    <option value="4">h4</option>
+                                    <option value="5">h5</option>
+                                    <option value="6">h6</option>
+                                </select>
+                            </label>
+                            <p id="sop-top-heading-hint" class="text-xs text-gray-500" data-i18n="controls.sopTopHeadingHint">For SOP manuals, h2 is recommended as the top heading level.</p>
+                        </div>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.paragraphLineHeight">Paragraph Line Height</span>
+                            <select id="paragraph-line-height" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="1">1</option>
+                                <option value="1.15">1.15</option>
+                                <option value="1.5" selected>1.5</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="render-settings-slide-section" class="contents hidden">
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.paragraphLineHeight">Paragraph Line Height</span>
+                            <select id="slide-line-height" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="1">1</option>
+                                <option value="1.15" selected>1.15</option>
+                                <option value="1.5">1.5</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.slideHeaderType">Header Type</span>
+                            <select id="slide-header-type" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="both-primary" selected data-i18n="controls.slideHeaderTypeBothPrimary">Both Primary</option>
+                                <option value="column-primary" data-i18n="controls.slideHeaderTypeColumnPrimary">Column Primary</option>
+                                <option value="row-primary" data-i18n="controls.slideHeaderTypeRowPrimary">Row Primary</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.slideTableFontSize">Table Font Size</span>
+                            <select id="slide-table-font-size" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18" selected>18</option>
+                                <option value="20">20</option>
+                                <option value="22">22</option>
+                                <option value="24">24</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.slideTextFontSize">Text Font Size</span>
+                            <select id="slide-text-font-size" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20" selected>20</option>
+                                <option value="22">22</option>
+                                <option value="24">24</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.slideTableWidth">Table Width</span>
+                            <select id="slide-table-width" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                                <option value="full" selected data-i18n="controls.slideTableWidthFull">Full (960)</option>
+                                <option value="half" data-i18n="controls.slideTableWidthHalf">Half (450)</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm text-gray-700">
+                            <span data-i18n="controls.slideTableHeight">Table Height</span>
+                            <select id="slide-table-height" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
+                            <option value="full" selected data-i18n="controls.slideTableHeightFull">Full (420)</option>
+                            <option value="half" data-i18n="controls.slideTableHeightHalf">Half (210)</option>
+                                <option value="auto" data-i18n="controls.slideTableHeightAuto">Auto</option>
+                            </select>
+                        </label>
+                        <label class="sm:col-span-2 flex items-start gap-3 text-sm text-gray-700">
+                            <input id="slide-apply-table-colors-to-text" type="checkbox" class="mt-1 rounded border-gray-300">
+                            <span data-i18n="controls.slideApplyTableColorsToText">Apply table colors to other text</span>
+                        </label>
+                    </div>
+
+                    <div id="render-settings-extra-section" class="contents">
+                        <label class="sm:col-span-2 flex items-start gap-3 text-sm text-gray-700">
+                            <input id="code-block-to-table" type="checkbox" class="mt-1 rounded border-gray-300">
+                            <span data-i18n="controls.codeBlockToTable">Convert code blocks to single-cell table</span>
+                        </label>
+                        <label class="sm:col-span-2 flex items-start gap-3 text-sm text-gray-700">
+                            <input id="blank-line-after-tables" type="checkbox" class="mt-1 rounded border-gray-300" checked>
+                            <span data-i18n="controls.blankLineAfterTables">Add blank line after tables</span>
+                        </label>
+                        <label class="sm:col-span-2 flex items-start gap-3 text-sm text-gray-700">
+                            <input id="remove-heading-bold" type="checkbox" class="mt-1 rounded border-gray-300" checked>
+                            <span data-i18n="controls.removeHeadingBold">Remove bold formatting in headings</span>
+                        </label>
+                    </div>
                 </div>
-                <div id="render-settings-sop-section" class="space-y-5">
-                <label class="flex flex-col gap-2 text-sm text-gray-700">
-                    <span data-i18n="controls.tableStyle">Table Style</span>
-                    <select id="table-style" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
-                        <option value="gray" data-i18n="controls.tableStyleGray">Gray</option>
-                        <option value="blue" data-i18n="controls.tableStyleBlue">Blue</option>
-                        <option value="yellow" data-i18n="controls.tableStyleYellow">Yellow</option>
-                        <option value="red" data-i18n="controls.tableStyleRed">Red</option>
-                        <option value="green" data-i18n="controls.tableStyleGreen">Green</option>
-                        <option value="purple" data-i18n="controls.tableStylePurple">Purple</option>
-                        <option value="brown" data-i18n="controls.tableStyleBrown">Brown</option>
-                    </select>
-                </label>
-                </div>
-                <label class="flex items-start gap-3 text-sm text-gray-700">
-                    <input id="code-block-to-table" type="checkbox" class="mt-1 rounded border-gray-300">
-                    <span data-i18n="controls.codeBlockToTable">Convert code blocks to single-cell table</span>
-                </label>
-                <label class="flex items-start gap-3 text-sm text-gray-700">
-                    <input id="remove-heading-bold" type="checkbox" class="mt-1 rounded border-gray-300" checked>
-                    <span data-i18n="controls.removeHeadingBold">Remove bold formatting in headings</span>
-                </label>
             </div>
             <div class="flex justify-end border-t border-gray-200 px-5 py-4">
                 <button id="sop-settings-close-btn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-i18n="controls.sopSettingsConfirm">

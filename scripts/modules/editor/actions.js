@@ -4,10 +4,29 @@ import {
     PASTE_MODE_KEY,
     TABLE_STYLE_KEY,
     CODE_BLOCK_TO_TABLE_KEY,
+    BLANK_LINE_AFTER_TABLES_KEY,
     REMOVE_HEADING_BOLD_KEY,
+    SLIDE_LINE_HEIGHT_KEY,
+    SLIDE_TABLE_FONT_SIZE_KEY,
+    SLIDE_TEXT_FONT_SIZE_KEY,
+    SLIDE_APPLY_TABLE_COLORS_TO_TEXT_KEY,
+    SLIDE_HEADER_TYPE_KEY,
+    SLIDE_TABLE_WIDTH_KEY,
+    SLIDE_TABLE_HEIGHT_KEY,
+    PARAGRAPH_LINE_HEIGHT_KEY,
+    PREVIEW_FONT_KEY,
     MARKDOWN_CONTENT_KEY,
+    DEFAULT_SLIDE_TABLE_FONT_SIZE,
+    DEFAULT_SLIDE_TEXT_FONT_SIZE,
     loadDefaultMarkdown,
-    updateRichTextFormatUI
+    updateRichTextFormatUI,
+    applyParagraphLineHeight,
+    applyPreviewFont,
+    normalizeSlideLineHeight,
+    normalizeSlideFontSize,
+    normalizeSlideHeaderType,
+    normalizeSlideTableWidth,
+    normalizeSlideTableHeight
 } from "./settings.js";
 import { pasteRichTextAsMarkdown } from "./paste.js";
 import {
@@ -34,7 +53,17 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
         pasteCleanDeselectAllBtn,
         tableStyleSelect,
         codeBlockToTableCheckbox,
+        blankLineAfterTablesCheckbox,
         removeHeadingBoldCheckbox,
+        slideLineHeightSelect,
+        slideTableFontSizeSelect,
+        slideTextFontSizeSelect,
+        slideApplyTableColorsToTextCheckbox,
+        slideHeaderTypeSelect,
+        slideTableWidthSelect,
+        slideTableHeightSelect,
+        paragraphLineHeightSelect,
+        previewFontSelect,
         renderSettingsElements
     } = elements;
 
@@ -59,9 +88,78 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
         localStorage.setItem(CODE_BLOCK_TO_TABLE_KEY, codeBlockToTableCheckbox.checked ? "true" : "false");
     });
 
+    blankLineAfterTablesCheckbox?.addEventListener("change", () => {
+        updateEditorPreview();
+        localStorage.setItem(BLANK_LINE_AFTER_TABLES_KEY, blankLineAfterTablesCheckbox.checked ? "true" : "false");
+    });
+
     removeHeadingBoldCheckbox?.addEventListener("change", () => {
         updateEditorPreview();
         localStorage.setItem(REMOVE_HEADING_BOLD_KEY, removeHeadingBoldCheckbox.checked ? "true" : "false");
+    });
+
+    slideLineHeightSelect?.addEventListener("change", () => {
+        const lineHeight = normalizeSlideLineHeight(slideLineHeightSelect.value);
+        slideLineHeightSelect.value = lineHeight;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_LINE_HEIGHT_KEY, lineHeight);
+    });
+
+    slideTableFontSizeSelect?.addEventListener("change", () => {
+        const fontSize = normalizeSlideFontSize(slideTableFontSizeSelect.value, DEFAULT_SLIDE_TABLE_FONT_SIZE);
+        slideTableFontSizeSelect.value = fontSize;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_TABLE_FONT_SIZE_KEY, fontSize);
+    });
+
+    slideTextFontSizeSelect?.addEventListener("change", () => {
+        const fontSize = normalizeSlideFontSize(slideTextFontSizeSelect.value, DEFAULT_SLIDE_TEXT_FONT_SIZE);
+        slideTextFontSizeSelect.value = fontSize;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_TEXT_FONT_SIZE_KEY, fontSize);
+    });
+
+    slideApplyTableColorsToTextCheckbox?.addEventListener("change", () => {
+        updateEditorPreview();
+        localStorage.setItem(
+            SLIDE_APPLY_TABLE_COLORS_TO_TEXT_KEY,
+            slideApplyTableColorsToTextCheckbox.checked ? "true" : "false"
+        );
+    });
+
+    slideHeaderTypeSelect?.addEventListener("change", () => {
+        const headerType = normalizeSlideHeaderType(slideHeaderTypeSelect.value);
+        slideHeaderTypeSelect.value = headerType;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_HEADER_TYPE_KEY, headerType);
+    });
+
+    slideTableWidthSelect?.addEventListener("change", () => {
+        const tableWidth = normalizeSlideTableWidth(slideTableWidthSelect.value);
+        slideTableWidthSelect.value = tableWidth;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_TABLE_WIDTH_KEY, tableWidth);
+    });
+
+    slideTableHeightSelect?.addEventListener("change", () => {
+        const tableHeight = normalizeSlideTableHeight(slideTableHeightSelect.value);
+        slideTableHeightSelect.value = tableHeight;
+        updateEditorPreview();
+        localStorage.setItem(SLIDE_TABLE_HEIGHT_KEY, tableHeight);
+    });
+
+    paragraphLineHeightSelect?.addEventListener("change", () => {
+        const lineHeight = applyParagraphLineHeight(previewArea, paragraphLineHeightSelect.value);
+        paragraphLineHeightSelect.value = lineHeight;
+        updateEditorPreview();
+        localStorage.setItem(PARAGRAPH_LINE_HEIGHT_KEY, lineHeight);
+    });
+
+    previewFontSelect?.addEventListener("change", () => {
+        const font = applyPreviewFont(previewArea, previewFontSelect.value);
+        previewFontSelect.value = font;
+        updateEditorPreview();
+        localStorage.setItem(PREVIEW_FONT_KEY, font);
     });
 
     pasteModeSelect.addEventListener("change", () => {

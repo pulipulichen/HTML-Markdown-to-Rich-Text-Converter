@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 1.0.6
+
+### Added
+
+- Added a **Slide 16:9** Copy Rich Text Format in Render Settings, keeping Font and Table Style while hiding SOP/document-oriented options.
+- Added Slide table sizing controls: width (`full` `960px` / `half` `450px`) and height (`full` `420px` / `half` `210px` / `auto`, default `full`).
+- Added Slide header-type modes (`both-primary` / `column-primary` / `row-primary`) with primary and secondary header colors.
+- Added separate Slide font-size controls for tables (default `18`) and other text (default `20`), plus slide line height (default `1.15`).
+- Added a Slide checkbox to apply table colors to non-table text (body text uses table body color; bold uses the table header/dark color).
+- Added Playwright E2E coverage for Slide 16:9 visibility, table styling, header types, width/height, font sizes, color application, bullet-list cells, and settings persistence.
+
+### Changed
+
+- Styled Slide tables with horizontal zebra striping, `2px` base cell padding, centered cells by default, and fixed-width/height output suited for 16:9 slides.
+- When Slide table height is set, the first header row uses `font-size × 1.5` and remaining height is shared by body rows.
+- For Slide first-column headers (primary or secondary), applied `white-space: nowrap` and extra horizontal padding of `0.5 ×` table font size; first-row headers also get extra vertical padding of `0.5 ×` table font size.
+- Converted Slide table cells that use `<br>`-separated `-` / `*` bullets into left-aligned `<ul><li>` lists, with list-item top/bottom margins of `0.5 ×` table font size.
+- Applied `0.5 ×` text font-size bottom margin to non-table Slide list items.
+- Reorganized the Render Settings modal into a wider two-column layout so Slide-related options take less vertical space.
+- Reset preview body font size to SOP/Plain `12pt` when leaving Slide 16:9, so Slide font sizes no longer linger after switching formats.
+- Retuned Table Style palettes to muted slide-friendly colors for gray, blue, yellow, red, green, purple, and brown (updated header, secondary header, body, zebra, text, and border values).
+
 ## 1.0.5
 
 ### Added
@@ -9,9 +31,14 @@
 - Added `scripts/transform/clean-paste-html.js` to sanitize clipboard HTML before Markdown conversion, and `scripts/modules/editor/paste-clean-settings.js` for option load/save helpers.
 - Added English and Traditional Chinese labels for all paste-clean controls and hints.
 - Added a Render Settings checkbox **Remove bold formatting in headings** (`remove_heading_bold`), enabled by default, that unwraps `<strong>`/`<b>` inside heading tags in the live preview while leaving body bold unchanged.
+- Added a Render Settings **Paragraph Line Height** selector (`1` / `1.15` / `1.5`, default `1.5`), persisted in `localStorage` (`paragraph_line_height`), applied to preview paragraphs and list items (`p`, `li`) via CSS variable and inline styles for copy fidelity.
+- Added a Render Settings **Font** selector (`Microsoft JhengHei` default / `Noto Sans TC`), persisted in `localStorage` (`preview_font`), applied to the live preview and Word-oriented table `<font face>` output.
+- Added keep-with-next print styles on preview headings (`page-break-after: avoid`, `break-after: avoid-page`, and Word-oriented `mso-pagination: keep-with-next`) so headings stay with the following paragraph when printing or pasting into Word where supported.
+- Added a Render Settings checkbox **Add blank line after tables** (`blank_line_after_tables`), enabled by default, that inserts a trailing `<br>` after regular tables and code-block tables in preview/copy output.
 
 ### Changed
 
+- Set rich-text table cell padding to `2px 6px` (top/bottom `2`, left/right `6`) on `td`/`th` for SOP, Plain, and code-block tables in preview and copy output.
 - Moved editor and preview toolbar actions from the top header into a **sticky two-column navbar** above the Markdown Input and Live Preview panels (left: Clear, Load Demo, Remove Empty Lines, paste mode, paste-clean settings, Paste Rich Text; right: Render Settings, Copy Rich Text).
 - Simplified the top header to the app title and language selector only; moved Render Settings out of the Live Preview panel header into the preview toolbar.
 - Defaulted **Convert code blocks to single-cell table** (`code_block_to_table`) to enabled when no saved preference exists in `localStorage`.

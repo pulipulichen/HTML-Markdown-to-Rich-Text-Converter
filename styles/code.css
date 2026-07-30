@@ -10,7 +10,7 @@
 
 #preview-area table:not([data-code-block-table="true"]) td {
     border-color: black;
-    padding-top: 6px;
+    padding: 2px 6px;
 }
 
 #preview-area table td pre {

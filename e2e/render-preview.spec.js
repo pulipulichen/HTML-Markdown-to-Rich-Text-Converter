@@ -12,6 +12,52 @@ test('renders markdown headings and paragraphs in preview', async ({ page }) => 
   await expect(preview.locator('p')).toHaveText('This is a preview test.');
 });
 
+test('inserts a blank line after tables in preview', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('| Name | Value |\n| --- | --- |\n| Alpha | 1 |\n\nNext paragraph.');
+
+  const table = preview.locator('table').first();
+  await expect(table).toBeVisible();
+
+  const hasTrailingBreak = await table.evaluate(el => el.nextElementSibling?.tagName === 'BR');
+  expect(hasTrailingBreak).toBe(true);
+});
+
+test('skips blank line after tables when setting is disabled', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await page.locator('#sop-settings-btn').click();
+  await expect(page.locator('#blank-line-after-tables')).toBeChecked();
+  await page.locator('#blank-line-after-tables').uncheck();
+  await page.locator('#sop-settings-close-btn').click();
+
+  await input.fill('| Name | Value |\n| --- | --- |\n| Alpha | 1 |\n\nNext paragraph.');
+
+  const table = preview.locator('table').first();
+  const hasTrailingBreak = await table.evaluate(el => el.nextElementSibling?.tagName === 'BR');
+  expect(hasTrailingBreak).toBe(false);
+});
+
+test('keeps blank-line-after-tables selection after reload', async ({ page }) => {
+  await page.goto('/');
+
+  await page.locator('#sop-settings-btn').click();
+  await page.locator('#blank-line-after-tables').uncheck();
+  await page.locator('#sop-settings-close-btn').click();
+
+  await page.reload();
+  await page.locator('#sop-settings-btn').click();
+
+  await expect(page.locator('#blank-line-after-tables')).not.toBeChecked();
+});
+
 test('normalizes heading levels based on selected top level', async ({ page }) => {
   await page.goto('/');
 
