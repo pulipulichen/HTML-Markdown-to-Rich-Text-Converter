@@ -232,7 +232,16 @@ test('applies keep-with-next styles on headings', async ({ page }) => {
   await input.fill('# Title\n\nParagraph under heading.');
 
   const heading = preview.locator('h2').first();
-  await expect(heading).toHaveCSS('page-break-after', 'avoid');
-  await expect(heading).toHaveAttribute('style', /page-break-after:\s*avoid/);
-  await expect(heading).toHaveAttribute('style', /mso-pagination:\s*widow-orphan lines keep-with-next/);
+  // Chromium exposes the modern break-after computed value; page-break-after may be "".
+  await expect(heading).toHaveCSS('break-after', 'avoid-page');
+  await expect(heading).toHaveAttribute('style', /break-after:\s*avoid-page/);
+  // mso-pagination cannot live in Chromium style attributes; mark intent for copy injection.
+  await expect(heading).toHaveAttribute('data-mso-pagination', 'widow-orphan lines keep-with-next');
+
+  const clipboardHtml = await page.evaluate(() => {
+    return buildRichTextClipboardHtml(document.getElementById('preview-area'));
+  });
+  expect(clipboardHtml).toMatch(/page-break-after:\s*avoid/);
+  expect(clipboardHtml).toMatch(/break-after:\s*avoid-page/);
+  expect(clipboardHtml).toMatch(/mso-pagination:\s*widow-orphan lines keep-with-next/);
 });

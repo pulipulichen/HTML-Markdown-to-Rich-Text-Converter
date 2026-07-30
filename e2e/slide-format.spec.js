@@ -35,7 +35,6 @@ test('applies slide table width, zebra striping, padding, and centered headers',
   await expect(headerRow.locator('td, th').nth(0)).toHaveAttribute('valign', 'middle');
   await expect(headerRow.locator('td, th').nth(1)).toHaveAttribute('align', 'center');
   await expect(headerRow.locator('td, th').nth(1)).toHaveAttribute('valign', 'middle');
-  await expect(headerRow.locator('td, th').nth(1)).toHaveCSS('padding', '2px');
 
   await expect(previewTable.locator('tr').nth(1)).toHaveAttribute('bgcolor', '#FAFBFC');
   await expect(previewTable.locator('tr').nth(2)).toHaveAttribute('bgcolor', '#E9EDF1');
@@ -46,24 +45,34 @@ test('applies slide table width, zebra striping, padding, and centered headers',
   await expect(bodyCell).toHaveAttribute('valign', 'middle');
   await expect(bodyCell).toHaveCSS('text-align', 'center');
   await expect(bodyCell).toHaveCSS('vertical-align', 'middle');
+  // Non-header body cells keep the 2px base padding (extra padding is header-only).
+  await expect(bodyCell).toHaveCSS('padding', '2px');
 
   const firstColumnBodyCell = previewTable.locator('tr').nth(1).locator('td, th').nth(0);
   await expect(firstColumnBodyCell).toHaveAttribute('bgcolor', '#465362');
   await expect(firstColumnBodyCell).toHaveAttribute('align', 'center');
   await expect(firstColumnBodyCell).toHaveAttribute('valign', 'middle');
   await expect(firstColumnBodyCell).toHaveCSS('white-space', 'nowrap');
-  // Default table font 18 → extra padding = 0.5*18pt = 9pt
   await expect(firstColumnBodyCell).toHaveAttribute('style', /white-space:\s*nowrap/);
-  await expect(firstColumnBodyCell).toHaveAttribute('style', /padding:\s*2px\s+calc\(2px \+ 9pt\)/);
-  await expect(headerRow.locator('td, th').nth(1)).toHaveAttribute(
-    'style',
-    /padding:\s*calc\(2px \+ 9pt\)\s+2px/
-  );
+  // Default table font 18 → extra padding = 0.5*18pt = 9pt (= 12px), so 2px + 9pt => 14px.
+  // Assert computed padding: Chromium serializes calc(2px + 9pt) as calc(14px) in style attributes.
+  await expect(firstColumnBodyCell).toHaveCSS('padding-top', '2px');
+  await expect(firstColumnBodyCell).toHaveCSS('padding-bottom', '2px');
+  await expect(firstColumnBodyCell).toHaveCSS('padding-left', '14px');
+  await expect(firstColumnBodyCell).toHaveCSS('padding-right', '14px');
+
+  const headerSecondCell = headerRow.locator('td, th').nth(1);
+  await expect(headerSecondCell).toHaveCSS('padding-top', '14px');
+  await expect(headerSecondCell).toHaveCSS('padding-bottom', '14px');
+  await expect(headerSecondCell).toHaveCSS('padding-left', '2px');
+  await expect(headerSecondCell).toHaveCSS('padding-right', '2px');
+
   // Corner header cell gets both vertical and horizontal extra padding
-  await expect(headerRow.locator('td, th').nth(0)).toHaveAttribute(
-    'style',
-    /padding:\s*calc\(2px \+ 9pt\)\s+calc\(2px \+ 9pt\)/
-  );
+  const headerCornerCell = headerRow.locator('td, th').nth(0);
+  await expect(headerCornerCell).toHaveCSS('padding-top', '14px');
+  await expect(headerCornerCell).toHaveCSS('padding-bottom', '14px');
+  await expect(headerCornerCell).toHaveCSS('padding-left', '14px');
+  await expect(headerCornerCell).toHaveCSS('padding-right', '14px');
 });
 
 test('converts br-separated bullets in slide table cells into left-aligned lists', async ({ page }) => {

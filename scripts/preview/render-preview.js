@@ -2,7 +2,10 @@ const DEFAULT_TOP_HEADING_LEVEL = 2;
 const DEFAULT_RICH_TEXT_FORMAT = "sop";
 const DEFAULT_PARAGRAPH_LINE_HEIGHT = "1.5";
 const VALID_PARAGRAPH_LINE_HEIGHTS = ["1", "1.15", "1.5"];
-const HEADING_KEEP_WITH_NEXT_STYLE = "page-break-after: avoid; break-after: avoid-page; mso-pagination: widow-orphan lines keep-with-next;";
+// Browser-safe keep-with-next styles. Word-oriented mso-pagination is injected at copy time
+// because Chromium's CSSOM strips unknown properties from live style attributes.
+const HEADING_KEEP_WITH_NEXT_STYLE = "page-break-after: avoid; break-after: avoid-page;";
+const HEADING_MSO_PAGINATION = "widow-orphan lines keep-with-next";
 
 const SLIDE_TABLE_PADDING = "2px";
 const DEFAULT_SLIDE_TABLE_FONT_SIZE = "18";
@@ -133,6 +136,7 @@ function applyHeadingKeepWithNextStyles(container) {
             ? `${withoutKeepWithNext}; ${HEADING_KEEP_WITH_NEXT_STYLE}`
             : HEADING_KEEP_WITH_NEXT_STYLE;
         heading.setAttribute("style", nextStyle);
+        heading.setAttribute("data-mso-pagination", HEADING_MSO_PAGINATION);
     });
 }
 

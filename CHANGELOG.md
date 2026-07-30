@@ -22,6 +22,11 @@
 - Reset preview body font size to SOP/Plain `12pt` when leaving Slide 16:9, so Slide font sizes no longer linger after switching formats.
 - Retuned Table Style palettes to muted slide-friendly colors for gray, blue, yellow, red, green, purple, and brown (updated header, secondary header, body, zebra, text, and border values).
 
+### Fixed
+
+- Fixed heading keep-with-next handling for Chromium: preview uses browser-safe `break-after` / `page-break-after` plus `data-mso-pagination`, and Copy Rich Text injects Word-oriented `mso-pagination` into the clipboard HTML (live DOM style attributes cannot retain unknown CSS properties).
+- Fixed Slide table padding E2E expectations to use computed padding values (`14px` for `2px + 9pt` extras) instead of raw `calc()` strings that Chromium rewrites in style attributes.
+
 ## 1.0.5
 
 ### Added
