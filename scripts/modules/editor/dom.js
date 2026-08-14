@@ -47,6 +47,7 @@ export function getEditorElements() {
     const renderSettingsExtraSection = document.getElementById("render-settings-extra-section");
     const renderSettingsSlideSection = document.getElementById("render-settings-slide-section");
     const sopTopHeadingHint = document.getElementById("sop-top-heading-hint");
+    const gmailPrintableHint = document.getElementById("gmail-printable-hint");
     const markdownDropOverlay = document.getElementById("markdown-drop-overlay");
 
     return {
@@ -91,7 +92,8 @@ export function getEditorElements() {
             documentSection: renderSettingsDocumentSection,
             extraSection: renderSettingsExtraSection,
             slideSection: renderSettingsSlideSection,
-            sopTopHeadingHint
+            sopTopHeadingHint,
+            gmailPrintableHint
         }
     };
 }

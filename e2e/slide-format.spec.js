@@ -100,7 +100,7 @@ test('converts br-separated bullets in slide table cells into left-aligned lists
   await expect(listCell.locator('li').nth(0)).toHaveAttribute('style', /margin-bottom:\s*9pt/);
 });
 
-test('applies slide table width full and half options', async ({ page }) => {
+test('applies slide table width full, half, and auto options', async ({ page }) => {
   await page.goto('/');
 
   const input = page.locator('#markdown-input');
@@ -122,6 +122,21 @@ test('applies slide table width full and half options', async ({ page }) => {
   await expect(previewTable).toHaveAttribute('width', '450');
   await expect(previewTable).toHaveAttribute('data-slide-table-width', 'half');
   await expect(previewTable).toHaveAttribute('style', /width:\s*450px/);
+
+  await page.locator('#sop-settings-btn').click();
+  await page.locator('#slide-table-width').selectOption('auto');
+  await page.locator('#sop-settings-close-btn').click();
+
+  await expect(previewTable).toHaveAttribute('data-slide-table-width', 'auto');
+  await expect(previewTable).not.toHaveAttribute('width');
+  await expect(previewTable).toHaveAttribute('style', /width:\s*auto/);
+
+  // Auto width: every cell gets left/right padding of 2px + 0.5*18pt (= 14px).
+  const autoWidthBodyCell = previewTable.locator('tr').nth(1).locator('td, th').nth(1);
+  await expect(autoWidthBodyCell).toHaveCSS('padding-left', '14px');
+  await expect(autoWidthBodyCell).toHaveCSS('padding-right', '14px');
+  await expect(autoWidthBodyCell).toHaveCSS('padding-top', '2px');
+  await expect(autoWidthBodyCell).toHaveCSS('padding-bottom', '2px');
 });
 
 test('applies slide table height full, half, and auto options', async ({ page }) => {
@@ -159,6 +174,13 @@ test('applies slide table height full, half, and auto options', async ({ page })
   await expect(previewTable).toHaveAttribute('data-slide-table-height', 'auto');
   await expect(previewTable).not.toHaveAttribute('height');
   await expect(previewTable).not.toHaveAttribute('style', /height:\s*\d+px/);
+
+  // Auto height: every cell gets top/bottom padding of 2px + 0.5*18pt (= 14px).
+  const autoHeightBodyCell = previewTable.locator('tr').nth(1).locator('td, th').nth(1);
+  await expect(autoHeightBodyCell).toHaveCSS('padding-top', '14px');
+  await expect(autoHeightBodyCell).toHaveCSS('padding-bottom', '14px');
+  await expect(autoHeightBodyCell).toHaveCSS('padding-left', '2px');
+  await expect(autoHeightBodyCell).toHaveCSS('padding-right', '2px');
 });
 
 test('applies slide header type primary and secondary colors', async ({ page }) => {

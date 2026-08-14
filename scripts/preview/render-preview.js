@@ -48,6 +48,9 @@ function updatePreview(
     rawValue = filterMarkdown(rawValue);
 
     previewArea.innerHTML = marked.parse(rawValue);
+    convertTableCellBrBulletsToLists(previewArea);
+    trimTrailingEmptyTableEdges(previewArea);
+    mergeTrailingEmptyTableCells(previewArea);
 
     if (!isSlideFormat) {
         normalizeHeadingLevels(previewArea, topHeadingLevel);
@@ -229,6 +232,12 @@ function applyRichTextFormat(container, richTextFormat, slideTableOptions = DEFA
         return;
     }
 
+    if (richTextFormat === "gmail-printable") {
+        applyWordTableStyles(container);
+        applyPlainCodeBlockTableStyles(container);
+        return;
+    }
+
     applyWordTableStyles(container);
     applyPlainCodeBlockTableStyles(container);
 }
@@ -247,11 +256,16 @@ function normalizeSlideFontSize(fontSize, defaultSize = DEFAULT_SLIDE_TABLE_FONT
 }
 
 function normalizeSlideTableWidth(tableWidth) {
-    return Object.hasOwn(SLIDE_TABLE_WIDTH_PX, tableWidth) ? tableWidth : DEFAULT_SLIDE_TABLE_WIDTH;
+    if (tableWidth === "auto" || Object.hasOwn(SLIDE_TABLE_WIDTH_PX, tableWidth)) {
+        return tableWidth;
+    }
+
+    return DEFAULT_SLIDE_TABLE_WIDTH;
 }
 
 function resolveSlideTableWidthPx(tableWidth) {
-    return SLIDE_TABLE_WIDTH_PX[normalizeSlideTableWidth(tableWidth)];
+    const normalizedWidth = normalizeSlideTableWidth(tableWidth);
+    return normalizedWidth === "auto" ? null : SLIDE_TABLE_WIDTH_PX[normalizedWidth];
 }
 
 function normalizeSlideTableHeight(tableHeight) {
@@ -392,6 +406,149 @@ function extractBulletLineContent(htmlFragment) {
     return match ? match[1].trim() : null;
 }
 
+function convertTableCellBrBulletsToLists(container) {
+    Array.from(container.querySelectorAll("td, th")).forEach(cell => {
+        if (cell.closest('table[data-code-block-table="true"]')) {
+            return;
+        }
+
+        convertCellBrBulletsToList(cell);
+    });
+}
+
+function isTableCellEmpty(cell) {
+    const text = (cell.textContent || "").replace(/\u00a0/g, " ").trim();
+    if (text) {
+        return false;
+    }
+
+    const html = (cell.innerHTML || "")
+        .replace(/<br\s*\/?>/gi, "")
+        .replace(/&nbsp;/gi, "")
+        .replace(/\s+/g, "")
+        .trim();
+
+    return html === "";
+}
+
+/**
+ * Drop fully empty trailing rows (from the bottom) and fully empty trailing
+ * columns (from the right) before other table cell transforms run.
+ */
+function trimTrailingEmptyTableEdges(container) {
+    Array.from(container.querySelectorAll("table")).forEach(table => {
+        if (table.hasAttribute("data-code-block-table")) {
+            return;
+        }
+
+        trimTrailingEmptyRows(table);
+        trimTrailingEmptyColumns(table);
+    });
+}
+
+function isTableRowEmpty(row) {
+    const cells = Array.from(row.cells);
+    return cells.length === 0 || cells.every(isTableCellEmpty);
+}
+
+function trimTrailingEmptyRows(table) {
+    // Keep the header row even if somehow empty.
+    while (table.rows.length > 1) {
+        const lastRow = table.rows[table.rows.length - 1];
+        if (!isTableRowEmpty(lastRow)) {
+            break;
+        }
+
+        lastRow.remove();
+    }
+}
+
+function trimTrailingEmptyColumns(table) {
+    while (true) {
+        const rows = Array.from(table.rows);
+        if (rows.length === 0) {
+            return;
+        }
+
+        const columnCount = Math.min(...rows.map(row => row.cells.length));
+        if (columnCount <= 1) {
+            return;
+        }
+
+        const lastColumnIndex = columnCount - 1;
+        const columnIsEmpty = rows.every(row => isTableCellEmpty(row.cells[lastColumnIndex]));
+        if (!columnIsEmpty) {
+            return;
+        }
+
+        rows.forEach(row => {
+            if (row.cells.length > lastColumnIndex) {
+                row.cells[lastColumnIndex].remove();
+            }
+        });
+    }
+}
+
+/**
+ * When a body row has exactly one non-first cell with content and every cell to
+ * its right is empty, merge those empty cells into the filled cell via colspan.
+ * The first column is never merged away.
+ */
+function mergeTrailingEmptyTableCells(container) {
+    Array.from(container.querySelectorAll("table")).forEach(table => {
+        if (table.hasAttribute("data-code-block-table")) {
+            return;
+        }
+
+        Array.from(table.rows).forEach((row, rowIndex) => {
+            // Keep header columns intact so column labels stay aligned.
+            if (rowIndex === 0) {
+                return;
+            }
+
+            mergeTrailingEmptyNonFirstCellsInRow(row);
+        });
+    });
+}
+
+function mergeTrailingEmptyNonFirstCellsInRow(row) {
+    const cells = Array.from(row.cells);
+    if (cells.length < 3) {
+        return;
+    }
+
+    const nonFirstCells = cells.slice(1);
+    const filledRelativeIndexes = [];
+
+    nonFirstCells.forEach((cell, index) => {
+        if (!isTableCellEmpty(cell)) {
+            filledRelativeIndexes.push(index);
+        }
+    });
+
+    if (filledRelativeIndexes.length !== 1) {
+        return;
+    }
+
+    const filledRelativeIndex = filledRelativeIndexes[0];
+    if (filledRelativeIndex === nonFirstCells.length - 1) {
+        return;
+    }
+
+    const filledAbsoluteIndex = filledRelativeIndex + 1;
+    const span = cells.length - filledAbsoluteIndex;
+    if (span < 2) {
+        return;
+    }
+
+    const filledCell = cells[filledAbsoluteIndex];
+    for (let index = cells.length - 1; index > filledAbsoluteIndex; index -= 1) {
+        cells[index].remove();
+    }
+
+    filledCell.setAttribute("colspan", String(span));
+}
+
 function convertCellBrBulletsToList(cell) {
     if (!cell || cell.querySelector("ul, ol")) {
         return Boolean(cell?.querySelector("ul, ol"));
@@ -402,16 +559,66 @@ function convertCellBrBulletsToList(cell) {
         .map(part => part.trim())
         .filter(Boolean);
 
-    if (parts.length < 2) {
+    if (parts.length === 0) {
         return false;
     }
 
-    const items = parts.map(extractBulletLineContent);
-    if (items.some(item => item === null)) {
+    const segments = [];
+    let bulletItems = null;
+    let convertedAny = false;
+
+    const flushBullets = () => {
+        if (!bulletItems || bulletItems.length === 0) {
+            bulletItems = null;
+            return;
+        }
+
+        segments.push({ type: "list", items: bulletItems });
+        bulletItems = null;
+        convertedAny = true;
+    };
+
+    parts.forEach(part => {
+        const bulletContent = extractBulletLineContent(part);
+        if (bulletContent !== null) {
+            if (!bulletItems) {
+                bulletItems = [];
+            }
+
+            bulletItems.push(bulletContent);
+            return;
+        }
+
+        flushBullets();
+        segments.push({ type: "text", html: part });
+    });
+    flushBullets();
+
+    if (!convertedAny) {
         return false;
     }
 
-    cell.innerHTML = `<ul>${items.map(item => `<li>${item}</li>`).join("")}</ul>`;
+    // Avoid <br> next to <ul>: lists are already block-level, so a trailing/leading
+    // <br> shows up as an extra blank line (e.g. after the last bullet).
+    cell.innerHTML = segments.reduce((html, segment, index) => {
+        const piece = segment.type === "list"
+            ? `<ul>${segment.items.map(item => `<li>${item}</li>`).join("")}</ul>`
+            : segment.html;
+
+        if (index === 0) {
+            return piece;
+        }
+
+        const prev = segments[index - 1];
+        const needsBr = prev.type === "text" && segment.type === "text";
+        return needsBr ? `${html}<br>${piece}` : `${html}${piece}`;
+    }, "");
+
+    Array.from(cell.querySelectorAll("ul")).forEach(list => {
+        list.style.margin = "0";
+        list.style.paddingLeft = "1.25em";
+    });
+
     return true;
 }
 
@@ -443,7 +650,8 @@ function applySlideTableStyles(container, options = DEFAULT_SLIDE_TABLE_OPTIONS)
         options?.tableFontSize ?? options?.fontSize,
         DEFAULT_SLIDE_TABLE_FONT_SIZE
     );
-    const tableWidthPx = resolveSlideTableWidthPx(options?.tableWidth);
+    const tableWidthKey = normalizeSlideTableWidth(options?.tableWidth);
+    const tableWidthPx = resolveSlideTableWidthPx(tableWidthKey);
     const tableHeightKey = normalizeSlideTableHeight(options?.tableHeight);
     const tableHeightPx = resolveSlideTableHeightPx(tableHeightKey);
     const secondaryHeaderBackground = tableStyle.secondaryHeaderBackground || tableStyle.headerBackground;
@@ -451,19 +659,25 @@ function applySlideTableStyles(container, options = DEFAULT_SLIDE_TABLE_OPTIONS)
 
     tables.forEach(table => {
         table.removeAttribute("style");
+        table.removeAttribute("width");
         table.removeAttribute("height");
         table.setAttribute("data-slide-table", "true");
-        table.setAttribute("data-slide-table-width", normalizeSlideTableWidth(options?.tableWidth));
+        table.setAttribute("data-slide-table-width", tableWidthKey);
         table.setAttribute("data-slide-table-height", tableHeightKey);
         table.setAttribute("border", "1");
         table.setAttribute("cellspacing", "0");
         table.setAttribute("cellpadding", "0");
-        table.setAttribute("width", tableWidthPx);
         table.setAttribute("bordercolor", tableStyle.borderColor);
-        table.style.width = `${tableWidthPx}px`;
         table.style.lineHeight = "1";
         table.style.borderCollapse = "collapse";
         table.style.fontSize = `${fontSize}pt`;
+
+        if (tableWidthPx) {
+            table.setAttribute("width", tableWidthPx);
+            table.style.width = `${tableWidthPx}px`;
+        } else {
+            table.style.width = "auto";
+        }
 
         if (tableHeightPx) {
             table.setAttribute("height", tableHeightPx);
@@ -521,11 +735,15 @@ function applySlideTableStyles(container, options = DEFAULT_SLIDE_TABLE_OPTIONS)
 
                 const isFirstColumnHeader = cellIndex === 0 && isHeaderCell;
                 const isFirstRowHeader = rowIndex === 0 && isHeaderCell;
+                const isAutoWidth = tableWidthKey === "auto";
+                const isAutoHeight = tableHeightKey === "auto";
                 const extraPadding = `${Number(fontSize) * 0.5}pt`;
-                const verticalPadding = isFirstRowHeader
+                // Auto size: give every cell comfortable padding on the free axis
+                // (same extra as header cells: 0.5 × table font size).
+                const verticalPadding = isFirstRowHeader || isAutoHeight
                     ? `calc(${SLIDE_TABLE_PADDING} + ${extraPadding})`
                     : SLIDE_TABLE_PADDING;
-                const horizontalPadding = isFirstColumnHeader
+                const horizontalPadding = isFirstColumnHeader || isAutoWidth
                     ? `calc(${SLIDE_TABLE_PADDING} + ${extraPadding})`
                     : SLIDE_TABLE_PADDING;
 

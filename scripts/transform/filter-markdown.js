@@ -25,6 +25,7 @@ function filterMarkdown(markdown) {
     // after closing ** when it ends with punctuation then a letter/number
     // (e.g. **（untagged）**範例, **標題：**內文).
     markdown = normalizeBoldDelimiters(markdown);
+    markdown = collapseBrokenBoldMarkers(markdown);
 
     return markdown;
 }
@@ -36,6 +37,38 @@ function filterMarkdown(markdown) {
  *   and the next character is a letter/number
  * Leaves fenced / inline code untouched.
  */
+function collapseBrokenBoldMarkers(markdown) {
+    return mapOutsideFencedCode(markdown, (segment) =>
+        mapOutsideInlineCode(segment, collapseBrokenBoldMarkersInText)
+    );
+}
+
+function collapseBrokenBoldMarkersInText(text) {
+    return text.split(/(\n)/).map(part => {
+        if (part === "\n" || /^\s*\*{3,}\s*$/.test(part)) {
+            return part;
+        }
+
+        return collapseBrokenBoldMarkersInLine(part);
+    }).join("");
+}
+
+function collapseBrokenBoldMarkersInLine(line) {
+    let result = line;
+    let previous;
+
+    do {
+        previous = result;
+        result = result.replace(
+            /\*\*((?:(?!\*\*)[\s\S])+?)\*\*\*\*((?:(?!\*\*)[\s\S])+?)\*\*/g,
+            "**$1$2**"
+        );
+        result = result.replace(/(^|[^*])\*\*\*\*([^*]|$)/g, "$1$2");
+    } while (result !== previous);
+
+    return result.replace(/[ \t]{2,}/g, " ");
+}
+
 function normalizeBoldDelimiters(markdown) {
     return mapOutsideFencedCode(markdown, (segment) =>
         mapOutsideInlineCode(segment, normalizeBoldDelimitersInText)

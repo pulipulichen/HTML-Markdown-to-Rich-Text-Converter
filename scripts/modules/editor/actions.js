@@ -28,7 +28,7 @@ import {
     normalizeSlideTableWidth,
     normalizeSlideTableHeight
 } from "./settings.js";
-import { pasteRichTextAsMarkdown } from "./paste.js";
+import { applyGmailPrintableSourceConversion, pasteRichTextAsMarkdown } from "./paste.js";
 import {
     getPasteCleanOptions,
     savePasteCleanOptions,
@@ -79,8 +79,14 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
 
     richTextFormatSelect.addEventListener("change", () => {
         updateRichTextFormatUI(richTextFormatSelect, renderSettingsElements);
-        updateEditorPreview();
         localStorage.setItem(RICH_TEXT_FORMAT_KEY, richTextFormatSelect.value);
+
+        if (richTextFormatSelect.value === "gmail-printable"
+            && applyGmailPrintableSourceConversion(markdownInput, MARKDOWN_CONTENT_KEY)) {
+            showEditorToast(t("toast.gmailPrintConverted"));
+        }
+
+        updateEditorPreview();
     });
 
     codeBlockToTableCheckbox.addEventListener("change", () => {
@@ -184,6 +190,7 @@ export function bindEditorActions({ elements, t, updateEditorPreview, showEditor
             updateEditorPreview,
             showEditorToast,
             pasteCleanOptions: getPasteCleanOptions(),
+            richTextFormat: richTextFormatSelect.value,
             t
         });
     });

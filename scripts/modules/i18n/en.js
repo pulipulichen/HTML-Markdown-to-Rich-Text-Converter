@@ -21,6 +21,8 @@ export const EN_TRANSLATIONS = {
         richTextFormatSop: "SOP Manual",
         richTextFormatPlain: "Plain",
         richTextFormatSlide169: "Slide 16:9",
+        richTextFormatGmailPrintable: "Gmail Printable",
+        gmailPrintableHint: "Converts Gmail Print pages into archive Markdown: removes the Gmail header and signatures, and flattens message tables.",
         codeBlockToTable: "Convert code blocks to single-cell table",
         blankLineAfterTables: "Add blank line after tables",
         removeHeadingBold: "Remove bold formatting in headings",
@@ -35,6 +37,7 @@ export const EN_TRANSLATIONS = {
         slideTableWidth: "Table Width",
         slideTableWidthFull: "Full (960)",
         slideTableWidthHalf: "Half (450)",
+        slideTableWidthAuto: "Auto",
         slideTableHeight: "Table Height",
         slideTableHeightFull: "Full (420)",
         slideTableHeightHalf: "Half (210)",
@@ -99,7 +102,8 @@ export const EN_TRANSLATIONS = {
         clipboardPermissionDenied: "Unable to read clipboard. Please check browser permissions.",
         onlyMarkdownFileAllowed: "Only .md or .markdown files can be dropped.",
         markdownFileLoaded: "Loaded Markdown file: {fileName}",
-        markdownFileReadFailed: "Failed to read the dropped Markdown file."
+        markdownFileReadFailed: "Failed to read the dropped Markdown file.",
+        gmailPrintConverted: "Gmail Print converted into archive Markdown."
     },
     confirm: {
         clearAll: "Are you sure you want to clear all content?",

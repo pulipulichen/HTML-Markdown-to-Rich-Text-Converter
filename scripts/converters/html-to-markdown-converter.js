@@ -106,6 +106,93 @@ window.setTableStyleTheme = setTableStyleTheme;
 window.getPreviewFontFace = getPreviewFontFace;
 window.setPreviewFontFace = setPreviewFontFace;
 
+function unwrapHtmlElement(element) {
+    const parent = element.parentNode;
+    if (!parent) {
+        return;
+    }
+
+    while (element.firstChild) {
+        parent.insertBefore(element.firstChild, element);
+    }
+
+    parent.removeChild(element);
+}
+
+function isBoldElement(node) {
+    return node?.nodeType === Node.ELEMENT_NODE
+        && (node.tagName === "STRONG" || node.tagName === "B");
+}
+
+function isIgnorableNodeBetweenBold(node) {
+    if (!node || node.nodeType !== Node.TEXT_NODE) {
+        return false;
+    }
+
+    return !node.textContent.replace(/\u00a0/g, " ").trim();
+}
+
+function unwrapNestedBoldElements(root) {
+    let nested = root.querySelector("strong strong, strong b, b strong, b b");
+
+    while (nested) {
+        unwrapHtmlElement(nested);
+        nested = root.querySelector("strong strong, strong b, b strong, b b");
+    }
+}
+
+function mergeAdjacentBoldElements(root) {
+    let changed = true;
+
+    while (changed) {
+        changed = false;
+
+        Array.from(root.querySelectorAll("strong, b")).forEach(bold => {
+            if (!bold.isConnected) {
+                return;
+            }
+
+            let next = bold.nextSibling;
+            while (isIgnorableNodeBetweenBold(next)) {
+                next = next.nextSibling;
+            }
+
+            if (!isBoldElement(next)) {
+                return;
+            }
+
+            let cursor = bold.nextSibling;
+            while (cursor && cursor !== next) {
+                const toMove = cursor;
+                cursor = cursor.nextSibling;
+                bold.appendChild(toMove);
+            }
+
+            while (next.firstChild) {
+                bold.appendChild(next.firstChild);
+            }
+
+            next.remove();
+            changed = true;
+        });
+    }
+}
+
+function removeEmptyBoldElements(root) {
+    root.querySelectorAll("strong, b").forEach(element => {
+        const text = element.textContent.replace(/\u00a0/g, " ").trim();
+        if (!text) {
+            element.remove();
+        }
+    });
+}
+
+function normalizeBoldElements(root) {
+    unwrapNestedBoldElements(root);
+    mergeAdjacentBoldElements(root);
+    removeEmptyBoldElements(root);
+}
+
 function unwrapBlockElementsInListItems(root) {
     root.querySelectorAll("li").forEach(listItem => {
         const blocks = Array.from(listItem.children).filter(child => child.tagName === "P" || child.tagName === "DIV");
@@ -136,6 +223,7 @@ function preprocessHtmlForMarkdown(html) {
     const container = document.createElement("div");
     container.innerHTML = html.trim();
     unwrapBlockElementsInListItems(container);
+    normalizeBoldElements(container);
     return container.innerHTML;
 }
 
@@ -153,10 +241,72 @@ function convertHtmlToMarkdown(html, options = {}) {
 
     addMarkdownTableRule(turndownService, options);
 
+    if (options.preserveTextColor) {
+        addColoredTextRule(turndownService);
+    }
+
     return turndownService.turndown(preprocessHtmlForMarkdown(html));
 }
 
 window.convertHtmlToMarkdown = convertHtmlToMarkdown;
+
+const DEFAULT_TEXT_COLORS = new Set([
+    "#000",
+    "#000000",
+    "#111",
+    "#111111",
+    "#222",
+    "#222222",
+    "#27313b",
+    "#243746",
+    "black",
+    "windowtext",
+    "currentcolor",
+    "inherit",
+    "initial"
+]);
+
+function normalizeCssColor(color) {
+    return String(color || "").trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function isDefaultTextColor(color) {
+    return DEFAULT_TEXT_COLORS.has(normalizeCssColor(color));
+}
+
+function extractInlineColor(node) {
+    if (!node || node.nodeType !== Node.ELEMENT_NODE) {
+        return "";
+    }
+
+    const attributeColor = node.getAttribute("color");
+    if (attributeColor && !isDefaultTextColor(attributeColor)) {
+        return attributeColor.trim();
+    }
+
+    const styleColor = node.getAttribute("style")?.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+    if (styleColor && !isDefaultTextColor(styleColor[1])) {
+        return styleColor[1].trim();
+    }
+
+    return "";
+}
+
+function addColoredTextRule(turndownService) {
+    const filter = node => Boolean(extractInlineColor(node));
+
+    turndownService.addRule("coloredText", {
+        filter,
+        replacement: (content, node) => {
+            const color = extractInlineColor(node);
+            if (!color || !content.trim()) {
+                return content;
+            }
+
+            return `<span style="color: ${color}">${content}</span>`;
+        }
+    });
+}
 
 function addMarkdownTableRule(turndownService, options = {}) {
     turndownService.addRule("markdownTables", {

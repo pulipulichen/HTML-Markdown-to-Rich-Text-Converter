@@ -16,7 +16,8 @@ import {
     loadSlideTableWidth,
     loadSlideTableHeight,
     loadParagraphLineHeight,
-    loadPreviewFont
+    loadPreviewFont,
+    MARKDOWN_CONTENT_KEY
 } from "./modules/editor/settings.js";
 import { getEditorElements } from "./modules/editor/dom.js";
 import { createEditorSync } from "./modules/editor/preview-sync.js";
@@ -24,6 +25,7 @@ import { bindEditorActions } from "./modules/editor/actions.js";
 import { bindMarkdownFileDrop } from "./modules/editor/drag-drop.js";
 import { bindSopSettingsModal } from "./modules/editor/sop-settings-modal.js";
 import { loadPasteCleanOptions } from "./modules/editor/paste-clean-settings.js";
+import { applyGmailPrintableSourceConversion } from "./modules/editor/paste.js";
 
 const elements = getEditorElements();
 const {
@@ -113,6 +115,9 @@ window.addEventListener("load", async () => {
     loadPasteCleanOptions(pasteCleanCheckboxes);
     loadTableStyle(tableStyleSelect);
     await loadInitialContent(markdownInput, t);
+    if (richTextFormatSelect.value === "gmail-printable") {
+        applyGmailPrintableSourceConversion(markdownInput, MARKDOWN_CONTENT_KEY);
+    }
     updateEditorPreview();
     refreshLocalizedRuntimeText();
 });

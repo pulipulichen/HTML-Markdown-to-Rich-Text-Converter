@@ -63,8 +63,11 @@ function sanitizePastedMarkdown(markdown) {
     const normalizedMarkdown = tightenConsecutiveListItems(
         unescapeHeadingNumberedPrefixes(lines.join("\n"))
     );
+    const withCollapsedBold = typeof window.collapseBrokenBoldMarkers === "function"
+        ? window.collapseBrokenBoldMarkers(normalizedMarkdown)
+        : normalizedMarkdown;
 
-    return collapseConsecutiveEmptyLines(normalizedMarkdown).trim();
+    return collapseConsecutiveEmptyLines(withCollapsedBold).trim();
 }
 
 function mergeMarkdownContent(currentContent, incomingContent, mode) {
@@ -94,6 +97,50 @@ function getLocalizedPasteMode(mode, t) {
     return key ? t(key) : mode;
 }
 
+function convertPastedContentToMarkdown(html, text, pasteCleanOptions, richTextFormat) {
+    const useGmailPrintable = richTextFormat === "gmail-printable";
+
+    if (html && useGmailPrintable && window.isGmailPrintContent?.(html)) {
+        return window.convertGmailPrintToMarkdown(html);
+    }
+
+    if (!html && text && useGmailPrintable && window.isGmailPrintContent?.(text)) {
+        return window.convertGmailPrintToMarkdown(text);
+    }
+
+    if (html) {
+        return window.convertHtmlToMarkdown(html, {
+            skipTableStyles: Boolean(pasteCleanOptions?.tableStyle)
+        });
+    }
+
+    return text;
+}
+
+export function applyGmailPrintableSourceConversion(markdownInput, markdownContentKey) {
+    if (!markdownInput) {
+        return false;
+    }
+
+    const result = window.tryConvertGmailPrintToMarkdown?.(markdownInput.value);
+    let nextMarkdown = result?.converted ? result.markdown : markdownInput.value;
+
+    if (typeof window.collapseBrokenBoldMarkers === "function") {
+        nextMarkdown = window.collapseBrokenBoldMarkers(nextMarkdown);
+    }
+
+    if (nextMarkdown === markdownInput.value) {
+        return Boolean(result?.converted);
+    }
+
+    markdownInput.value = nextMarkdown;
+    if (markdownContentKey) {
+        localStorage.setItem(markdownContentKey, nextMarkdown);
+    }
+
+    return true;
+}
+
 export async function pasteRichTextAsMarkdown({
     markdownInput,
     pasteModeSelect,
@@ -102,6 +149,7 @@ export async function pasteRichTextAsMarkdown({
     updateEditorPreview,
     showEditorToast,
     pasteCleanOptions,
+    richTextFormat,
     t
 }) {
     try {
@@ -114,9 +162,12 @@ export async function pasteRichTextAsMarkdown({
         const html = clipboardContent.html
             ? window.cleanPasteHtml(clipboardContent.html, pasteCleanOptions)
             : null;
-        const markdown = html
-            ? window.convertHtmlToMarkdown(html, { skipTableStyles: Boolean(pasteCleanOptions?.tableStyle) })
-            : clipboardContent.text;
+        const markdown = convertPastedContentToMarkdown(
+            html,
+            clipboardContent.text,
+            pasteCleanOptions,
+            richTextFormat
+        );
         const sanitizedMarkdown = sanitizePastedMarkdown(markdown);
 
         if (!sanitizedMarkdown) {

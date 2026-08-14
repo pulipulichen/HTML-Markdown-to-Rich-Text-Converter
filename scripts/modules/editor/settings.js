@@ -18,7 +18,7 @@ export const PREVIEW_FONT_KEY = "preview_font";
 export const MARKDOWN_CONTENT_KEY = "markdown_content";
 
 export const VALID_TABLE_STYLES = ["gray", "blue", "yellow", "red", "green", "purple", "brown"];
-export const VALID_RICH_TEXT_FORMATS = ["sop", "plain", "slide-16-9"];
+export const VALID_RICH_TEXT_FORMATS = ["sop", "plain", "slide-16-9", "gmail-printable"];
 export const VALID_PARAGRAPH_LINE_HEIGHTS = ["1", "1.15", "1.5"];
 export const DEFAULT_PARAGRAPH_LINE_HEIGHT = "1.5";
 export const DEFAULT_SLIDE_LINE_HEIGHT = "1.15";
@@ -27,7 +27,7 @@ export const DEFAULT_SLIDE_TABLE_FONT_SIZE = "18";
 export const DEFAULT_SLIDE_TEXT_FONT_SIZE = "20";
 export const VALID_SLIDE_HEADER_TYPES = ["both-primary", "column-primary", "row-primary"];
 export const DEFAULT_SLIDE_HEADER_TYPE = "both-primary";
-export const VALID_SLIDE_TABLE_WIDTHS = ["full", "half"];
+export const VALID_SLIDE_TABLE_WIDTHS = ["full", "half", "auto"];
 export const DEFAULT_SLIDE_TABLE_WIDTH = "full";
 export const SLIDE_TABLE_WIDTH_PX = {
     full: "960",
@@ -334,12 +334,15 @@ export function updateRichTextFormatUI(richTextFormatSelect, renderSettingsEleme
         documentSection,
         extraSection,
         slideSection,
-        sopTopHeadingHint
+        sopTopHeadingHint,
+        gmailPrintableHint
     } = renderSettingsElements;
+    const isGmailFormat = format === "gmail-printable";
 
     tableStyleSection?.classList.toggle("hidden", isPlainFormat);
     documentSection?.classList.toggle("hidden", isSlideFormat);
     extraSection?.classList.toggle("hidden", isSlideFormat);
     slideSection?.classList.toggle("hidden", !isSlideFormat);
     sopTopHeadingHint?.classList.toggle("hidden", !isSopFormat);
+    gmailPrintableHint?.classList.toggle("hidden", !isGmailFormat);
 }

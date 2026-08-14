@@ -33,6 +33,7 @@ test('toggles format-specific render settings when rich text format changes', as
   const extraSection = page.locator('#render-settings-extra-section');
   const slideSection = page.locator('#render-settings-slide-section');
   const sopHint = page.locator('#sop-top-heading-hint');
+  const gmailHint = page.locator('#gmail-printable-hint');
 
   await expect(richTextFormat).toHaveValue('sop');
   await expect(tableStyleSection).not.toHaveClass(/hidden/);
@@ -40,6 +41,7 @@ test('toggles format-specific render settings when rich text format changes', as
   await expect(extraSection).not.toHaveClass(/hidden/);
   await expect(slideSection).toHaveClass(/hidden/);
   await expect(sopHint).not.toHaveClass(/hidden/);
+  await expect(gmailHint).toHaveClass(/hidden/);
 
   await richTextFormat.selectOption('plain');
 
@@ -48,6 +50,7 @@ test('toggles format-specific render settings when rich text format changes', as
   await expect(extraSection).not.toHaveClass(/hidden/);
   await expect(slideSection).toHaveClass(/hidden/);
   await expect(sopHint).toHaveClass(/hidden/);
+  await expect(gmailHint).toHaveClass(/hidden/);
 
   await richTextFormat.selectOption('slide-16-9');
 
@@ -56,7 +59,17 @@ test('toggles format-specific render settings when rich text format changes', as
   await expect(extraSection).toHaveClass(/hidden/);
   await expect(slideSection).not.toHaveClass(/hidden/);
   await expect(sopHint).toHaveClass(/hidden/);
+  await expect(gmailHint).toHaveClass(/hidden/);
   await expect(page.locator('#preview-font')).toBeVisible();
+
+  await richTextFormat.selectOption('gmail-printable');
+
+  await expect(tableStyleSection).not.toHaveClass(/hidden/);
+  await expect(documentSection).not.toHaveClass(/hidden/);
+  await expect(extraSection).not.toHaveClass(/hidden/);
+  await expect(slideSection).toHaveClass(/hidden/);
+  await expect(sopHint).toHaveClass(/hidden/);
+  await expect(gmailHint).not.toHaveClass(/hidden/);
 
   await richTextFormat.selectOption('sop');
 
@@ -65,6 +78,7 @@ test('toggles format-specific render settings when rich text format changes', as
   await expect(extraSection).not.toHaveClass(/hidden/);
   await expect(slideSection).toHaveClass(/hidden/);
   await expect(sopHint).not.toHaveClass(/hidden/);
+  await expect(gmailHint).toHaveClass(/hidden/);
 });
 
 test('keeps rich text format selection after reload', async ({ page }) => {

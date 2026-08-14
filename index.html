@@ -217,7 +217,9 @@
                         <option value="sop" data-i18n="controls.richTextFormatSop">SOP Manual</option>
                         <option value="plain" data-i18n="controls.richTextFormatPlain">Plain</option>
                         <option value="slide-16-9" data-i18n="controls.richTextFormatSlide169">Slide 16:9</option>
+                        <option value="gmail-printable" data-i18n="controls.richTextFormatGmailPrintable">Gmail Printable</option>
                     </select>
+                    <p id="gmail-printable-hint" class="text-xs text-gray-500 hidden" data-i18n="controls.gmailPrintableHint">Converts Gmail Print pages into archive Markdown: removes the Gmail header and signatures, and flattens message tables.</p>
                 </label>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
@@ -315,6 +317,7 @@
                             <select id="slide-table-width" class="border border-gray-300 rounded px-3 py-2 bg-white text-gray-700">
                                 <option value="full" selected data-i18n="controls.slideTableWidthFull">Full (960)</option>
                                 <option value="half" data-i18n="controls.slideTableWidthHalf">Half (450)</option>
+                                <option value="auto" data-i18n="controls.slideTableWidthAuto">Auto</option>
                             </select>
                         </label>
                         <label class="flex flex-col gap-2 text-sm text-gray-700">
@@ -363,6 +366,7 @@
     <script src="scripts/transform/clean-paste-html.js"></script>
     <script src="scripts/transform/filter-markdown.js"></script>
     <script src="scripts/converters/html-to-markdown-converter.js"></script>
+    <script src="scripts/converters/gmail-print-to-markdown.js"></script>
     <script src="scripts/clipboard/read-clipboard.js"></script>
     <script src="scripts/preview/render-preview.js"></script>
     <script src="scripts/ui/show-toast.js"></script>

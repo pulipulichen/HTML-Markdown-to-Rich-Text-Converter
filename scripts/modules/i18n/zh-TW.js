@@ -21,6 +21,8 @@ export const ZH_TW_TRANSLATIONS = {
         richTextFormatSop: "SOP手冊格式",
         richTextFormatPlain: "無格式",
         richTextFormatSlide169: "投影片 16:9",
+        richTextFormatGmailPrintable: "Gmail 列印頁",
+        gmailPrintableHint: "將 Gmail 列印頁轉成便於保存的 Markdown：移除 Gmail 頁首與簽名檔，並把信件表格攤平成一般內容。",
         codeBlockToTable: "將程式碼語法轉換成單格表格",
         blankLineAfterTables: "表格後加入空行",
         removeHeadingBold: "移除標題中粗體的格式",
@@ -35,6 +37,7 @@ export const ZH_TW_TRANSLATIONS = {
         slideTableWidth: "表格寬度",
         slideTableWidthFull: "Full（960）",
         slideTableWidthHalf: "Half（450）",
+        slideTableWidthAuto: "Auto",
         slideTableHeight: "表格高度",
         slideTableHeightFull: "Full（420）",
         slideTableHeightHalf: "Half（210）",
@@ -99,7 +102,8 @@ export const ZH_TW_TRANSLATIONS = {
         clipboardPermissionDenied: "無法讀取剪貼簿，請確認瀏覽器權限。",
         onlyMarkdownFileAllowed: "僅支援拖曳 .md 或 .markdown 檔案。",
         markdownFileLoaded: "已載入 Markdown 檔案：{fileName}",
-        markdownFileReadFailed: "讀取拖曳的 Markdown 檔案失敗。"
+        markdownFileReadFailed: "讀取拖曳的 Markdown 檔案失敗。",
+        gmailPrintConverted: "已將 Gmail 列印頁轉成便於保存的 Markdown。"
     },
     confirm: {
         clearAll: "確定要清空所有內容嗎？",

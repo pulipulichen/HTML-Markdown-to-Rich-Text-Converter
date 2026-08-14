@@ -12,6 +12,7 @@ A real-time Markdown-to-HTML rich preview tool with rich-text paste-to-Markdown 
 - Real-time Markdown parsing with HTML preview
 - Rich-text paste to Markdown (replace / append / prepend modes)
 - One-click rich-text copy from the preview panel
+- Gmail Printable format: convert Gmail Print pages into archive-friendly Markdown (strips the Gmail header and signatures, then flattens message tables)
 - Bilingual UI switching (English and Traditional Chinese)
 - Persisted editor state in localStorage (content, paste mode, heading level)
 - Adjustable top heading level (h1-h6)
