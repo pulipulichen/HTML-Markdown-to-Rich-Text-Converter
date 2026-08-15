@@ -133,6 +133,21 @@ function unwrapStructuralItalics(root) {
     });
 }
 
+function belongsToTable(element, table) {
+    let parent = element.parentElement;
+    while (parent && parent !== table) {
+        if (parent.tagName === "TABLE") {
+            return false;
+        }
+        parent = parent.parentElement;
+    }
+    return parent === table;
+}
+
+function queryOwnDescendants(table, selector) {
+    return Array.from(table.querySelectorAll(selector)).filter(element => belongsToTable(element, table));
+}
+
 function isGmailLogoImage(image) {
     if (!image) {
         return false;
@@ -144,13 +159,14 @@ function isGmailLogoImage(image) {
 }
 
 function isGmailHeaderTable(table) {
-    if (isGmailLogoImage(table.querySelector("img"))) {
+    const ownImages = queryOwnDescendants(table, "img");
+    if (ownImages.some(isGmailLogoImage)) {
         return true;
     }
 
     const text = normalizeSpace(table.textContent);
     const hasAccount = /<.+@.+>/.test(text) || /@gmail\.com/i.test(text);
-    return table.rows.length === 1 && table.rows[0].cells.length === 2 && hasAccount && table.querySelector("img");
+    return table.rows.length === 1 && table.rows[0].cells.length === 2 && hasAccount && ownImages.length > 0;
 }
 
 function removeGmailPageChrome(root) {
@@ -168,7 +184,7 @@ function removeGmailPageChrome(root) {
 }
 
 function isLayoutTable(table) {
-    if (table.classList.contains("message") || table.querySelector(".recipient, .replyto, .gmail_signature")) {
+    if (table.classList.contains("message") || queryOwnDescendants(table, ".recipient, .replyto, .gmail_signature").length > 0) {
         return false;
     }
 
@@ -221,7 +237,7 @@ function isGmailMessageTable(table) {
         return true;
     }
 
-    if (table.querySelector(".recipient, .replyto, .gmail_signature")) {
+    if (queryOwnDescendants(table, ".recipient, .replyto, .gmail_signature").length > 0) {
         return true;
     }
 
