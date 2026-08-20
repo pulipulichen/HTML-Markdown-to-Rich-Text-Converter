@@ -41,7 +41,16 @@
     line-height: var(--preview-line-height, 1.5); 
 }
 #preview-area ul { list-style-type: disc; padding-left: 2em; margin-bottom: 1em; }
+#preview-area ul ul { list-style-type: circle; }
+#preview-area ul ul ul { list-style-type: square; }
 #preview-area ol { list-style-type: decimal; padding-left: 2em; margin-bottom: 1em; }
+#preview-area ol ol { list-style-type: lower-alpha; }
+#preview-area ol ol ol { list-style-type: lower-roman; }
+#preview-area li > ul,
+#preview-area li > ol {
+    margin-top: 0.25em;
+    margin-bottom: 0;
+}
 #preview-area table ul,
 #preview-area table ol {
     margin-top: 0;

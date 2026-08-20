@@ -233,3 +233,187 @@ test('converts asterisk bullets inside table cells into lists', async ({ page })
   await expect(cell.locator('li').nth(1)).toHaveText('Second item');
   await expect(cell).toContainText('Intro');
 });
+
+test('renders nested indented lists correctly in preview', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+  const markdown = [
+    '- 漢神目前共有三處主要環境：',
+    '  - **高雄 2 家店**：現行使用 VMware。',
+    '  - **臺中 1 家店**：現行使用 Bigstack。',
+    '  - **巨蛋店**：目前為 VMware 三層式 Storage 架構，規劃未來轉為 **PVE 超融合架構**。'
+  ].join('\n');
+
+  await input.fill(markdown);
+
+  const topUl = preview.locator('> ul');
+  await expect(topUl).toHaveCount(1);
+
+  const topLi = topUl.locator('> li');
+  await expect(topLi).toHaveCount(1);
+  await expect(topLi).toContainText('漢神目前共有三處主要環境：');
+
+  const nestedUl = topLi.locator('> ul');
+  await expect(nestedUl).toHaveCount(1);
+
+  const nestedLis = nestedUl.locator('> li');
+  await expect(nestedLis).toHaveCount(3);
+  await expect(nestedLis.nth(0)).toContainText('高雄 2 家店');
+  await expect(nestedLis.nth(0).locator('strong')).toHaveText('高雄 2 家店');
+  await expect(nestedLis.nth(1)).toContainText('臺中 1 家店');
+  await expect(nestedLis.nth(1).locator('strong')).toHaveText('臺中 1 家店');
+  await expect(nestedLis.nth(2)).toContainText('巨蛋店');
+  await expect(nestedLis.nth(2).locator('strong').nth(0)).toHaveText('巨蛋店');
+  await expect(nestedLis.nth(2).locator('strong').nth(1)).toHaveText('PVE 超融合架構');
+});
+
+test('nests list items indented by a single space', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+  const markdown = [
+    '## 一、漢神現況與 PVE 導入需求',
+    '',
+    '- 漢神目前共有三處主要環境：',
+    ' ',
+    ' - **高雄 2 家店**：現行使用 VMware。',
+    ' ',
+    ' - **臺中 1 家店**：現行使用 Bigstack。',
+    ' ',
+    ' - **巨蛋店**：目前為 VMware 三層式 Storage 架構，規劃未來轉為 **PVE 超融合架構**。',
+    ' ',
+    '- 預計 2028 年開新店。'
+  ].join('\n');
+
+  await input.fill(markdown);
+
+  const topLis = preview.locator('> ul > li');
+  await expect(topLis).toHaveCount(2);
+  await expect(topLis.nth(0)).toContainText('漢神目前共有三處主要環境：');
+  await expect(topLis.nth(1)).toContainText('預計 2028 年開新店。');
+
+  const nestedLis = topLis.nth(0).locator('> ul > li');
+  await expect(nestedLis).toHaveCount(3);
+  await expect(nestedLis.nth(0).locator('strong')).toHaveText('高雄 2 家店');
+  await expect(nestedLis.nth(1).locator('strong')).toHaveText('臺中 1 家店');
+  await expect(nestedLis.nth(2).locator('strong').nth(0)).toHaveText('巨蛋店');
+});
+
+test('keeps sibling list items flat when indentation is uniform', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('- Alpha\n- Beta\n- Gamma');
+
+  await expect(preview.locator('> ul > li')).toHaveCount(3);
+  await expect(preview.locator('> ul > li ul')).toHaveCount(0);
+});
+
+test('nests ordered list items indented by a single space', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('1. 第一階段\n 1. 子項目 A\n 2. 子項目 B\n2. 第二階段');
+
+  const topLis = preview.locator('> ol > li');
+  await expect(topLis).toHaveCount(2);
+
+  const nestedLis = topLis.nth(0).locator('> ol > li');
+  await expect(nestedLis).toHaveCount(2);
+  await expect(nestedLis.nth(0)).toContainText('子項目 A');
+  await expect(nestedLis.nth(1)).toContainText('子項目 B');
+});
+
+test('removes blank lines between list items to keep the list tight', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+  const markdown = [
+    '- 漢神目前共有三處主要環境：',
+    ' ',
+    ' - **高雄 2 家店**：現行使用 VMware。',
+    ' ',
+    ' - **臺中 1 家店**：現行使用 Bigstack。',
+    ' ',
+    '- 預計 2028 年開新店。'
+  ].join('\n');
+
+  await input.fill(markdown);
+
+  // A tight list must not wrap its items in <p>.
+  await expect(preview.locator('li p')).toHaveCount(0);
+
+  const topLis = preview.locator('> ul > li');
+  await expect(topLis).toHaveCount(2);
+  await expect(topLis.nth(0).locator('> ul > li')).toHaveCount(2);
+});
+
+test('keeps blank lines separating a list from surrounding paragraphs', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('Before paragraph.\n\n- Alpha\n\n- Beta\n\nAfter paragraph.');
+
+  // The list stays tight...
+  await expect(preview.locator('li p')).toHaveCount(0);
+  await expect(preview.locator('> ul > li')).toHaveCount(2);
+
+  // ...but the surrounding paragraphs are still separate blocks.
+  await expect(preview.locator('> p')).toHaveCount(2);
+  await expect(preview.locator('> p').nth(0)).toHaveText('Before paragraph.');
+  await expect(preview.locator('> p').nth(1)).toHaveText('After paragraph.');
+});
+
+test('keeps two lists separate when a paragraph splits them', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('- Alpha\n\n- Beta\n\nMiddle text.\n\n- Gamma\n\n- Delta');
+
+  await expect(preview.locator('> ul')).toHaveCount(2);
+  await expect(preview.locator('> ul').nth(0).locator('> li')).toHaveCount(2);
+  await expect(preview.locator('> ul').nth(1).locator('> li')).toHaveCount(2);
+  await expect(preview.locator('> p')).toHaveText(['Middle text.']);
+});
+
+test('keeps blank lines between plain paragraphs', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('Para one.\n\nPara two.\n\nPara three.');
+
+  await expect(preview.locator('> p')).toHaveCount(3);
+});
+
+test('does not reindent list-like lines inside fenced code blocks', async ({ page }) => {
+  await page.goto('/');
+
+  const input = page.locator('#markdown-input');
+  const preview = page.locator('#preview-area');
+
+  await input.fill('```\n- parent\n - child\n```');
+
+  // Fenced code must never be turned into a real list.
+  await expect(preview.locator('ul')).toHaveCount(0);
+  await expect(preview.locator('li')).toHaveCount(0);
+
+  // The original single-space indent inside the fence stays untouched.
+  const codeText = await preview.evaluate(el => el.textContent.replace(/\u00a0/g, ' '));
+  expect(codeText).toContain('- parent');
+  expect(codeText).toContain(' - child');
+});
+
